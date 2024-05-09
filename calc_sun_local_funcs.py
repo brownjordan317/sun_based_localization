@@ -4,6 +4,8 @@ from statistics import median, mean
 from collections import Counter 
 import folium
 from folium.plugins import HeatMap
+import webbrowser
+from scipy.spatial import ConvexHull
 
 class functions:
     def __init__(self):
@@ -49,6 +51,7 @@ class functions:
         solar_elevation = 90 - angle_degrees
         return max(0, solar_elevation)  # Ensure solar elevation is non-negative
     
+    
     def calculate_solar_position(self, datetime, latitude, longitude):
         """
         Calculate the solar azimuth and altitude angles for a given datetime, latitude, and longitude.
@@ -65,38 +68,42 @@ class functions:
         day_of_year = datetime.timetuple().tm_yday
 
         # Calculate the solar declination angle
-        declination_angle = self.calc_declenation_angle(day_of_year)
+        declination_angle = math.radians(self.calc_declenation_angle(day_of_year))
 
         # Calculate the solar hour angle
         # Local Standad Time Meridian
         LSTM = 15 * abs(0) # LSTM = 15 * UTC Difference
         # Equation of time
-        B = (360/365) * (day_of_year - 81)
+        B = math.radians((360/365) * (day_of_year - 81))
         EoT = 9.87*math.sin(2*B) - 7.53*math.cos(B) - 1.5*math.sin(B)
         # Time Correction Factor
         TC = 4 * (longitude - LSTM) + EoT
         # Local Solar Time
-        LST = ((60 * datetime.hour) + datetime.minute + TC)
+        LST = ((60 * datetime.hour) + datetime.minute + TC) / 60
         # Hour Angle
-        hour_angle = 15 * ((LST / 60) - 12)
+        hour_angle = math.radians(15 * (LST - 12))
         # hour_angle = math.radians(15 * (datetime.hour - 12) + (datetime.minute / 4) - longitude)
 
+        latitude = math.radians(latitude)
+        longitude = math.radians(longitude)
         
-        altitude_angle = math.asin(math.sin(math.radians(latitude)) * math.sin(math.radians(declination_angle)) +
-                                   math.cos(math.radians(latitude)) * math.cos(math.radians(declination_angle)) * math.cos(hour_angle))
+        
+        altitude_angle = math.asin(math.sin(latitude) * math.sin(declination_angle) +
+                                   math.cos(latitude) * math.cos(declination_angle) * math.cos(hour_angle))
 
         
         # Calculate solar azimuth angle
-        azimuth_angle = math.atan2(-math.cos(math.radians(declination_angle)) * math.sin(hour_angle),
-                                math.cos(math.radians(latitude)) * math.sin(math.radians(declination_angle)) -
-                                math.sin(math.radians(latitude)) * math.cos(math.radians(declination_angle)) *
+        azimuth_angle = math.atan2(-math.cos(declination_angle) * math.sin(hour_angle),
+                                math.cos(latitude) * math.sin(declination_angle) -
+                                math.sin(latitude) * math.cos(declination_angle) *
                                 math.cos(hour_angle))
 
         # Convert angles to degrees
         altitude_deg = math.degrees(altitude_angle)
         azimuth_deg = math.degrees(azimuth_angle)
-        
+
         return azimuth_deg, altitude_deg
+
 
 
     def find_location(self, local_datetime, solar_azimuth, solar_elevation):
@@ -116,15 +123,16 @@ class functions:
         print(utc_datetime)
 
         # Define a range of latitudes and longitudes
-        latitudes = range(-91, 91, 1)  # Latitude range from -90 to 90 degrees
-        longitudes = range(-181, 0, 1)  # Longitude range from -180 to 180 degrees
+        latitudes = [i / 10 for i in range(0, 91 * 10)]  # Latitude range from 0 to 90 degrees with step size 0.25 degrees
+        longitudes = [i / 10 for i in range(-181 * 10, 0)]  # Longitude range from -180 to 0 degrees with step size 0.25 degrees
+
 
         # Initialize variables to track the closest locations and their corresponding azimuth and altitude
         closest_locations = []
         closest_azimuths = []
         closest_altitudes = []
         closest_weighted_differences = []
-        max_locations = 5
+        max_locations = 6
         min_weighted_differences = [float('inf')] * max_locations
 
         # Iterate over latitudes and longitudes
@@ -138,7 +146,7 @@ class functions:
                 elevation_difference = abs(calculated_elevation - solar_elevation)
 
                 # Calculate the weighted difference
-                weighted_difference = 0.1 * azimuth_difference + 0.9 * elevation_difference
+                weighted_difference = 1 * azimuth_difference + 1 * elevation_difference
 
                 # Check if the current location is among the top five closest
                 for i in range(max_locations):
@@ -168,23 +176,43 @@ if __name__ == "__main__":
     calculator = functions()
 
     # Example usage:
+    datetime_value = pd.Timestamp('2024-05-08 17:00:00')  # Example datetime
     height_of_object = 1  # Height of the object in meters
     length_of_shadow = 0.71  # Length of the shadow in meters
-    solar_azimuth = 138.26 # Example solar azimuth in degrees
 
+    # filename = "raleigh.html"
+    # solar_azimuth = 134.84 #Raleigh, NC
+    # solar_elevation = 65.76 #Raleigh, NC
 
+    # filename = "bismark.html"
+    # solar_azimuth = 136.75 # Bismark, ND
+    # solar_elevation = 54.11 # Bismark, ND
 
-    target_elevation = calculator.calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow)
-    target_elevation = round(target_elevation, 2)  # Round target_elevation to two decimal places
-    print("Estimated solar elevation angle:", target_elevation, "degrees")
+    # filename = "minneapolis.html"
+    # solar_azimuth = 146.64 # Minneapolis, MN
+    # solar_elevation = 58.8 # Minneapolis, MN
 
-    target_elevation = 60.55
-    print(f"Estimated asimuth angle: {solar_azimuth} degrees")
+    filename = "grand_forks.html"
+    solar_azimuth = 143.0
+    solar_elevation = 54.0
 
-    # Example usage
-    datetime_value = pd.Timestamp('2024-05-08 12:00:00')  # Example datetime
+    # filename = "san_francisco.html"
+    # solar_azimuth = 140.05 # San Francisco, CA
+    # solar_elevation = 64.98 # San Francisco, CA
 
-    solar_elevation = target_elevation  # Example solar elevation angle in degrees
+    # filename = "honolulu.html"
+    # solar_azimuth = 119.42 # Honolulu, HI
+    # solar_elevation = 82.37 # Honolulu, HI
+
+    # filename = "miami.html"
+    # solar_azimuth = 103.46 # San Francisco, CA
+    # solar_elevation = 64.55 # San Francisco, CA
+
+    # target_elevation = calculator.calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow)
+    # target_elevation = round(target_elevation, 2)  # Round target_elevation to two decimal places
+    # print("Estimated solar elevation angle:", target_elevation, "degrees")
+    # print(f"Estimated asimuth angle: {solar_azimuth} degrees")
+    # solar_elevation = target_elevation  # Example solar elevation angle in degrees
 
     closest_location = calculator.find_location(datetime_value, solar_azimuth, solar_elevation)
     print("Closest location:", closest_location)
@@ -209,3 +237,54 @@ if __name__ == "__main__":
     print("Mean Y Coordinate:", mean_y)
     print("Median Y Coordinate:", median_y)
     print("Mode Y Coordinate:", mode_y)
+
+    # Assuming closest_location is a list of latitude and longitude coordinates
+    # Example: closest_location = [(lat1, lon1), (lat2, lon2), ...]
+
+    # Find the convex hull of the points
+    hull = ConvexHull(closest_location)
+
+    # Get the vertices of the convex hull
+    hull_vertices = [closest_location[vertex] for vertex in hull.vertices]
+
+     # Calculate the centroid of the convex hull
+    centroid = [sum(p[0] for p in hull_vertices) / len(hull_vertices), sum(p[1] for p in hull_vertices) / len(hull_vertices)]
+
+    # Create a map centered at centroid
+    map_center = centroid
+    mymap = folium.Map(location=map_center, zoom_start=5)
+
+    # Draw a polygon shape using the convex hull vertices
+    folium.Polygon(locations=hull_vertices, color='blue', fill=True, fill_color='blue').add_to(mymap)
+
+    # Add markers for each point with tooltips showing their coordinates
+    for i, coord in enumerate(closest_location):
+        folium.Marker(coord, tooltip=f"Coordinates: {coord}").add_to(mymap)
+
+   
+
+    # Add a marker for the centroid with a label
+    folium.Marker(centroid, tooltip=f"Coordinates: {centroid}", icon=folium.Icon(color='red'), popup="Centroid").add_to(mymap)
+
+    # Define radius in miles
+    radius_miles = 50
+
+    # Convert miles to degrees (approximate conversion)
+    radius_degrees = radius_miles / 69.0
+
+    # Add circle with 100-mile radius centered around the centroid
+    folium.Circle(
+        location=centroid,
+        radius=radius_degrees * 111000,  # Convert degrees to meters (approximate conversion)
+        color='red',
+        fill=True,
+        fill_color='red',
+        fill_opacity=0.2,
+    ).add_to(mymap)
+
+    # Save the map to an HTML file
+    #filename = 'map_with_shape_and_points_and_centroid_and_circle.html'
+    mymap.save(filename)
+
+    # Open the saved HTML file in the default web browser
+    webbrowser.open(filename)
