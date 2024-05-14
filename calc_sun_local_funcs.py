@@ -23,23 +23,24 @@ class functions:
             float: The solar declination angle in degrees.
         """
 
-        # dOmega = 2.1429 - 0.0010394594 * dElapsedJulianDays
-        # dMeanLongitude = 4.8950630 + 0.017202791698 * dElapsedJulianDays  # Radians
-        # dMeanAnomaly = (6.2400600 + 0.0172019699 * dElapsedJulianDays)
-        # dEclipticLongitude = dMeanLongitude + 0.03341607 * math.sin(dMeanAnomaly) + 0.00034894 * math.sin(2 * dMeanAnomaly) - 0.0001134 - 0.0000203 * math.sin(dOmega)
-        # dEclipticObliquity = 0.4090928 - 6.2140e-9 * dElapsedJulianDays + 0.0000396 * math.cos(dOmega)
+        dOmega = 2.1429 - 0.0010394594 * dElapsedJulianDays
+        dMeanLongitude = 4.8950630 + 0.017202791698 * dElapsedJulianDays  # Radians
+        dMeanAnomaly = (6.2400600 + 0.0172019699 * dElapsedJulianDays)
+        dEclipticLongitude = dMeanLongitude + 0.03341607 * math.sin(dMeanAnomaly) + 0.00034894 * math.sin(2 * dMeanAnomaly) - 0.0001134 - 0.0000203 * math.sin(dOmega)
+        dEclipticObliquity = 0.4090928 - 6.2140e-9 * dElapsedJulianDays + 0.0000396 * math.cos(dOmega)
 
-        # dSin_EclipticLongitude = math.sin(dEclipticLongitude)
-        # dY = math.cos(dEclipticObliquity) * dSin_EclipticLongitude
-        # dX = math.cos(dEclipticLongitude)
-        # dRightAscension = math.atan2(dY, dX)
-        # if dRightAscension < 0.0:
-        #     dRightAscension += (2 * math.pi)
-        # dDeclination = math.asin(math.sin(dEclipticObliquity) * dSin_EclipticLongitude)
+        dSin_EclipticLongitude = math.sin(dEclipticLongitude)
+        dY = math.cos(dEclipticObliquity) * dSin_EclipticLongitude
+        dX = math.cos(dEclipticLongitude)
+        dRightAscension = math.atan2(dY, dX)
+        if dRightAscension < 0.0:
+            dRightAscension += (2 * math.pi)
+        dDeclination = math.asin(math.sin(dEclipticObliquity) * dSin_EclipticLongitude)
 
-        # declination_angle = dDeclination
-
-        declination_angle = 23.45 * math.sin(math.radians(360 * (284 + day_of_year) / 365))
+        declination_angle = dDeclination
+        # print(declination_angle)
+        # declination_angle = math.radians(23.45 * math.sin(math.radians(360 * (284 + day_of_year) / 365)))
+        # print(declination_angle)
         return declination_angle
     
 
@@ -91,7 +92,7 @@ class functions:
         dElapsedJulianDays = (date(year, month, day) - date(2000, 1, 1)).days
 
         # Calculate the solar declination angle
-        declination_angle = math.radians(self.calc_declenation_angle(dElapsedJulianDays, day_of_year))
+        declination_angle = self.calc_declenation_angle(dElapsedJulianDays, day_of_year)
 
         # Calculate the solar hour angle
         # Local Standad Time Meridian
@@ -147,7 +148,7 @@ class functions:
         """
         # Convert local datetime to UTC
         utc_datetime = local_datetime.tz_localize('UTC')
-        print(utc_datetime)
+        # print(utc_datetime)
 
         # Define a range of latitudes and longitudes
         latitudes = []  
@@ -171,7 +172,7 @@ class functions:
         closest_azimuths = []
         closest_altitudes = []
         closest_weighted_differences = []
-        max_locations = 1
+        max_locations = 5
         min_weighted_differences = [float('inf')] * max_locations
 
         # Iterate over latitudes and longitudes
@@ -216,7 +217,6 @@ if __name__ == "__main__":
     calculator = functions()
 
     # Example usage:
-    datetime_value = pd.Timestamp('2024-05-08 17:00:00')  # Example datetime
     height_of_object = 1  # Height of the object in meters
     length_of_shadow = 0.71  # Length of the shadow in meters
 
@@ -224,29 +224,29 @@ if __name__ == "__main__":
     # solar_azimuth = 134.84 #Raleigh, NC
     # solar_elevation = 65.76 #Raleigh, NC
 
-    filename = "bismark.html"
-    solar_azimuth = 136.75 # Bismark, ND
-    solar_elevation = 54.11 # Bismark, ND
+    # filename = "bismark.html"
+    # datetime_value = pd.Timestamp('2024-05-08 17:00:00')  # Example datetime
+    # solar_azimuth = 136.75 # Bismark, ND
+    # solar_elevation = 54.11 # Bismark, ND
 
     # filename = "minneapolis.html"
     # solar_azimuth = 146.64 # Minneapolis, MN
     # solar_elevation = 58.8 # Minneapolis, MN
-
-    # filename = "grand_forks.html"
-    # solar_azimuth = 143.0
-    # solar_elevation = 54.0
 
     # filename = "san_francisco.html"
     # solar_azimuth = 140.05 # San Francisco, CA
     # solar_elevation = 64.98 # San Francisco, CA
 
     # filename = "honolulu.html"
+    # datetime_value = pd.Timestamp('2024-05-08 22:00:00')  # Example datetime
     # solar_azimuth = 119.42 # Honolulu, HI
     # solar_elevation = 82.37 # Honolulu, HI
 
     # filename = "miami.html"
-    # solar_azimuth = 103.46 # San Francisco, CA
-    # solar_elevation = 64.55 # San Francisco, CA
+    # datetime_value = pd.Timestamp('2024-05-08 16:00:00')  # Example datetime
+    # solar_azimuth = 111.33 # San Francisco, CA
+    # solar_elevation = 70.21 # San Francisco, CA
+
 
     # target_elevation = calculator.calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow)
     # target_elevation = round(target_elevation, 2)  # Round target_elevation to two decimal places
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     folium.Marker(closest, tooltip=f"Coordinates: {closest}", icon=folium.Icon(color='red'), popup="Centroid").add_to(mymap)
 
     # Define radius in miles
-    radius_miles = 15
+    radius_miles = 10
 
     # Convert miles to degrees (approximate conversion)
     radius_degrees = radius_miles / 69.0
