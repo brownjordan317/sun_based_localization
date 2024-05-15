@@ -1,3 +1,11 @@
+import math
+from datetime import date, datetime
+import random
+import pandas as pd
+import ephem
+import pytz
+from timezonefinder import TimezoneFinder
+
 def random_locations():
     tests = []
 
@@ -93,7 +101,7 @@ def random_locations():
     
 
     # Randomly generate latitude and longitude 50 times
-    for i in range(50):
+    for i in range(5):
         # Generate random latitude (-90 to 90 degrees)
         latitude = random.uniform(-90, 90)
         
@@ -113,9 +121,17 @@ def random_locations():
         # Formatting the datetime object
         local_noon = pd.Timestamp(local_noon.strftime("%Y-%m-%d %H:%M:%S"))
 
+        timezone_offset = (longitude + 7.5) // 15
+        print(timezone_offset)
+
         azimuth, elevation = calculate_solar_position(local_noon, latitude, longitude)
     
 
         tests.append((pd.Timestamp(local_noon), azimuth, elevation, [latitude, longitude], "Random Location"))
 
     return tests
+
+tests = random_locations()
+for test in tests:
+    print(test)
+    print()

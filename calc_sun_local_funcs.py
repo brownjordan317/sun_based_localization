@@ -7,6 +7,7 @@ from folium.plugins import HeatMap
 import webbrowser
 from scipy.spatial import ConvexHull
 from datetime import date
+from haversine import haversine, Unit
 
 class functions:
     def __init__(self):
@@ -172,7 +173,7 @@ class functions:
         closest_azimuths = []
         closest_altitudes = []
         closest_weighted_differences = []
-        max_locations = 5
+        max_locations = 1
         min_weighted_differences = [float('inf')] * max_locations
 
         # Iterate over latitudes and longitudes
@@ -204,9 +205,9 @@ class functions:
                         break
 
         # Print the closest locations and their corresponding azimuth and altitude
-        print(step_size)
-        for location, azimuth, altitude, weighted_difference in zip(closest_locations, closest_azimuths, closest_altitudes, closest_weighted_differences):
-            print(f"Location: {location}, Azimuth: {azimuth:.2f}, Altitude: {altitude:.2f}, Weighted Difference: {weighted_difference:.6f}")
+        # print(step_size)
+        # for location, azimuth, altitude, weighted_difference in zip(closest_locations, closest_azimuths, closest_altitudes, closest_weighted_differences):
+        #     print(f"Location: {location}, Azimuth: {azimuth:.2f}, Altitude: {altitude:.2f}, Weighted Difference: {weighted_difference:.6f}")
 
         return closest_locations[0]
 
@@ -228,6 +229,12 @@ if __name__ == "__main__":
     # datetime_value = pd.Timestamp('2024-05-08 17:00:00')  # Example datetime
     # solar_azimuth = 136.75 # Bismark, ND
     # solar_elevation = 54.11 # Bismark, ND
+
+    filename = "grand_forksish.html"
+    datetime_value = pd.Timestamp('2024-05-15 15:15:00')  # Example datetime
+    solar_azimuth = 110
+    solar_elevation = 42
+    intended_lat_lon = [47.919, -97.060]
 
     # filename = "minneapolis.html"
     # solar_azimuth = 146.64 # Minneapolis, MN
@@ -305,7 +312,7 @@ if __name__ == "__main__":
     #     folium.Marker(coord, tooltip=f"Coordinates: {coord}").add_to(mymap)
 
     # Add a marker for the centroid with a label
-    folium.Marker(closest, tooltip=f"Coordinates: {closest}", icon=folium.Icon(color='red'), popup="Centroid").add_to(mymap)
+    folium.Marker(closest, tooltip=f"Coordinates: {closest}", icon=folium.Icon(color='red', icon='camera'), popup="Centroid").add_to(mymap)
 
     # Define radius in miles
     radius_miles = 10
@@ -313,19 +320,30 @@ if __name__ == "__main__":
     # Convert miles to degrees (approximate conversion)
     radius_degrees = radius_miles / 69.0
 
-    # Add circle with 100-mile radius centered around the centroid
-    folium.Circle(
-        location=closest,
-        radius=radius_degrees * 111000,  # Convert degrees to meters (approximate conversion)
-        color='red',
-        fill=True,
-        fill_color='red',
-        fill_opacity=0.2,
-    ).add_to(mymap)
+    # Calculate the Haversine distance between the two points
+    distance = haversine(intended_lat_lon, closest, unit=Unit.MILES)
+
+    # Add markers for the intended location and the closest point
+    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(mymap)
+
+    # Add a line between the intended location and the closest point with a popup label for the distance
+    line = folium.PolyLine(locations=[intended_lat_lon, closest], color='blue',
+                        tooltip=f'{distance:.2f} miles').add_to(mymap)
+
+
+    # # Add circle with 100-mile radius centered around the centroid
+    # folium.Circle(
+    #     location=closest,
+    #     radius=radius_degrees * 111000,  # Convert degrees to meters (approximate conversion)
+    #     color='red',
+    #     fill=True,
+    #     fill_color='red',
+    #     fill_opacity=0.2,
+    # ).add_to(mymap)
 
     # Save the map to an HTML file
     #filename = 'map_with_shape_and_points_and_centroid_and_circle.html'
     mymap.save(filename)
 
     # Open the saved HTML file in the default web browser
-    webbrowser.open(filename)
+    #webbrowser.open(filename)
