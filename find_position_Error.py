@@ -8,8 +8,11 @@ import sys
 import matplotlib.pyplot as plt
 import folium
 from folium.plugins import HeatMap
+from folium.plugins import MousePosition
+from folium.plugins import HeatMap, MousePosition, MeasureControl, MarkerCluster
 from scipy.spatial import ConvexHull
 import os
+import webbrowser
 
 def add_percent_error(number, percent_error):
     random_number = random.uniform(-percent_error, percent_error)
@@ -206,48 +209,39 @@ for change_type in ["both", "azimuth", "elevation"]:
 
 points = error_on_run_master.keys()
 
-
 try:
     # Create a Folium map centered around the average of the points
     center = [sum([p[0] for p in points]) / len(points), sum([p[1] for p in points]) / len(points)]
+    
+    # Create heatmap layer
+    heat_layer = HeatMap(points)
+
+    # Create marker layer for all points
+    marker_cluster = MarkerCluster(name='Points')
+    for point in points:
+        folium.Marker(point).add_to(marker_cluster)
+
+    # Create the map
     m = folium.Map(location=center, zoom_start=5)
+    MousePosition().add_to(m)
+    m.add_child(MeasureControl())
+    
+    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup=f"Intended: {intended_lat_lon}").add_to(m)
 
-    # Draw the heatmap on the map
-    HeatMap(points).add_to(m)
-
-     # Add markers for the intended location and the closest point
-    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(m)
+    # Add heatmap layer to the map
+    heat_layer.add_to(m)
+    
+    # Add marker cluster layer to the map
+    marker_cluster.add_to(m)
 
     # Save the map to an HTML file
     m.save(directory + "/" + city_name + "_map" + '.html')
+
+    # # Open the saved HTML file in the default web browser
+    # webbrowser.open(directory + "/" + city_name + "_map" + '.html')
+
 except Exception as e:
     print(f'Map unable to be generated for {city_name}: {e}')
-
-# try:
-#     # Calculate convex hull
-#     hull = ConvexHull(points)
-
-#     # Get the vertices of the convex hull
-#     vertices = [points[i] for i in hull.vertices]
-
-#     # Calculate the center of the convex hull (optional)
-#     center = [sum([p[0] for p in vertices]) / len(vertices), sum([p[1] for p in vertices]) / len(vertices)]
-
-#     # Create a Folium map centered around the center of the convex hull
-#     map_center = center if 'center' in locals() else points[0]
-#     m = folium.Map(location=map_center, zoom_start=5)
-
-#     # Draw the convex hull on the map
-#     folium.Polygon(locations=vertices, color='blue', fill=True, fill_color='blue', fill_opacity=0.4).add_to(m)
-
-#     # Add markers for the intended location and the closest point
-#     folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(m)
-
-
-#     # Display the map
-#     m.save(directory + "/" + city_name + "_map" + '.html')
-# except:
-#     print(f'Map unable to be generated for {city_name}')
 
 # Write statistics to file
 with open(filename + "/test_results.txt", "a") as f:

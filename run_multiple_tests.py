@@ -178,7 +178,7 @@ def main():
     # Record the start time
     start_time = datetime.datetime.now()
     for test in tests:
-        run_test(*test, elevations_range)
+        run_test(*test, elevations_range = None)
 
     # Record the end time
     end_time = datetime.datetime.now()
