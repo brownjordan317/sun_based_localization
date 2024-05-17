@@ -7,6 +7,7 @@ import multiprocessing
 import sys
 import matplotlib.pyplot as plt
 import folium
+from folium.plugins import HeatMap
 from scipy.spatial import ConvexHull
 import os
 
@@ -20,17 +21,22 @@ def add_percent_error(number, percent_error):
 
 # Define a function to perform the task for each iteration
 def process_iteration(iteration, error_on_run, change):
-    if change == 'azimuth' or change == 'both':
-        solar_azimuth, azimuth_percent_error = add_percent_error(initial_solar_azimuth, (iteration / 100))
-    else:
-        solar_azimuth = initial_solar_azimuth
-        azimuth_percent_error = 0  # or any default value you prefer
+    if iteration is not None:
+        if change == 'azimuth' or change == 'both':
+            solar_azimuth, azimuth_percent_error = add_percent_error(initial_solar_azimuth, (iteration / 100))
+        else:
+            solar_azimuth = initial_solar_azimuth
+            azimuth_percent_error = 0  # or any default value you prefer
 
-    if change == 'elevation' or change == 'both':
-        solar_elevation, solar_elevation_percent_error = add_percent_error(initial_solar_elevation, (iteration / 100))
+        if change == 'elevation' or change == 'both':
+            solar_elevation, solar_elevation_percent_error = add_percent_error(initial_solar_elevation, (iteration / 100))
+            solar_elevation = max(solar_elevation, 20)
+        else:
+            solar_elevation = initial_solar_elevation
+            solar_elevation_percent_error = 0  # or any default value you prefer
     else:
         solar_elevation = initial_solar_elevation
-        solar_elevation_percent_error = 0  # or any default value you prefer
+        solar_azimuth = initial_solar_azimuth
 
 
 
@@ -85,11 +91,10 @@ except ValueError:
     sys.exit(1)
 
 intended_lat_lon = [latitude, longitude]
+start_time = datetime.datetime.now()
 
-# Initialize error_on_run and start time
 manager = multiprocessing.Manager()
 error_on_run_master = manager.dict()
-start_time = datetime.datetime.now()
 date, time, hour, minute = start_time.date(), start_time.time(), start_time.hour, start_time.minute
 
 # Set the initial solar azimuth and elevation
@@ -107,6 +112,7 @@ for change_type in ["both", "azimuth", "elevation"]:
     
     # Perform the iterations in parallel
     pool.starmap(process_iteration, [(i, error_on_run, change_type) for i in range(int(percent_error * -100), int(percent_error * 100))])
+
     
     # Merge the data from the individual dictionary into the master dictionary
     for key, value in error_on_run.items():
@@ -114,11 +120,6 @@ for change_type in ["both", "azimuth", "elevation"]:
 
 
 # Close the pool of processes
-pool.close()
-pool.join()
-
-
-# Close the pool
 pool.close()
 pool.join()
 
@@ -204,25 +205,49 @@ for change_type in ["both", "azimuth", "elevation"]:
 
 
 points = error_on_run_master.keys()
-# Calculate convex hull
-hull = ConvexHull(points)
 
-# Get the vertices of the convex hull
-vertices = [points[i] for i in hull.vertices]
 
-# Calculate the center of the convex hull (optional)
-center = [sum([p[0] for p in vertices]) / len(vertices), sum([p[1] for p in vertices]) / len(vertices)]
+try:
+    # Create a Folium map centered around the average of the points
+    center = [sum([p[0] for p in points]) / len(points), sum([p[1] for p in points]) / len(points)]
+    m = folium.Map(location=center, zoom_start=5)
 
-# Create a Folium map centered around the center of the convex hull
-map_center = center if 'center' in locals() else points[0]
-m = folium.Map(location=map_center, zoom_start=5)
+    # Draw the heatmap on the map
+    HeatMap(points).add_to(m)
 
-# Draw the convex hull on the map
-folium.Polygon(locations=vertices, color='blue', fill=True, fill_color='blue', fill_opacity=0.4).add_to(m)
+     # Add markers for the intended location and the closest point
+    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(m)
 
-# Display the map
-m.save(directory + "/" + city_name + "_map" + '.html')
+    # Save the map to an HTML file
+    m.save(directory + "/" + city_name + "_map" + '.html')
+except Exception as e:
+    print(f'Map unable to be generated for {city_name}: {e}')
 
+# try:
+#     # Calculate convex hull
+#     hull = ConvexHull(points)
+
+#     # Get the vertices of the convex hull
+#     vertices = [points[i] for i in hull.vertices]
+
+#     # Calculate the center of the convex hull (optional)
+#     center = [sum([p[0] for p in vertices]) / len(vertices), sum([p[1] for p in vertices]) / len(vertices)]
+
+#     # Create a Folium map centered around the center of the convex hull
+#     map_center = center if 'center' in locals() else points[0]
+#     m = folium.Map(location=map_center, zoom_start=5)
+
+#     # Draw the convex hull on the map
+#     folium.Polygon(locations=vertices, color='blue', fill=True, fill_color='blue', fill_opacity=0.4).add_to(m)
+
+#     # Add markers for the intended location and the closest point
+#     folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(m)
+
+
+#     # Display the map
+#     m.save(directory + "/" + city_name + "_map" + '.html')
+# except:
+#     print(f'Map unable to be generated for {city_name}')
 
 # Write statistics to file
 with open(filename + "/test_results.txt", "a") as f:

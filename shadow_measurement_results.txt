@@ -1,0 +1,103 @@
+Timestamp: 2024-05-16 18:35:00
+Azimuth: -176
+Obj Height: 58.5
+Shadow Length: 32.25
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_1
+
+Timestamp: 2024-05-16 18:38:00
+Azimuth: -178
+Obj Height: 18.75
+Shadow Length: 10
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_2
+
+Timestamp: 2024-05-16 18:43:00
+Azimuth: -178
+Obj Height: 98.25
+Shadow Length: 55.85
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_3
+
+Timestamp: 2024-05-16 18:47:00
+Azimuth: -179
+Obj Height: 98
+Shadow Length: 50.5 
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_4
+
+Timestamp: 2024-05-16 20:16:00
+Azimuth: -133
+Obj Height: 256.66
+Shadow Length: 184.22
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_5
+
+Timestamp: 2024-05-16 20:24:00
+Azimuth: -132
+Obj Height: 250
+Shadow Length: 196.5
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_6
+
+Timestamp: 2024-05-16 20:31:00
+Azimuth: -130
+Obj Height: 112.4
+Shadow Length: 91
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_7
+
+Timestamp: 2024-05-16 20:34:00
+Azimuth: -133
+Obj Height: 10.1
+Shadow Length: 8.8
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_8
+
+Timestamp: 2024-05-16 20:18:00
+Azimuth: -133
+Obj Height: 100.25
+Shadow Length: 72
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_9
+
+Timestamp: 2024-05-16 20:27:00
+Azimuth: -130
+Obj Height: 98
+Shadow Length: 78 
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_10
+
+Timestamp: 2024-05-16 20:32:00
+Azimuth: -131
+Obj Height: 44.75
+Shadow Length: 36.5
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_11
+
+Timestamp: 2024-05-16 20:35:00
+Azimuth: -130
+Obj Height: 4.5
+Shadow Length: 4.25
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_12
+
+Timestamp: 2024-05-16 20:51:00
+Azimuth: -124
+Obj Height: 2.0
+Shadow Length: 1.9
+Latitude: 47.9253
+Longitude: -97.0329
+Name: grand_forks_shadow_13

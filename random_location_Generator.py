@@ -1,12 +1,14 @@
 import math
 from datetime import date, datetime
+import datetime
 import random
 import pandas as pd
 import ephem
 import pytz
 from timezonefinder import TimezoneFinder
+from random_city_return import return_random_city
 
-def random_locations():
+def random_locations(runs):
     tests = []
 
     def calc_declenation_angle(dElapsedJulianDays, day_of_year):
@@ -98,40 +100,30 @@ def random_locations():
         return azimuth_deg, altitude_deg
 
 
-    
-
     # Randomly generate latitude and longitude 50 times
-    for i in range(5):
-        # Generate random latitude (-90 to 90 degrees)
-        latitude = random.uniform(-90, 90)
+    total = runs
+    count = 1
+    while total > 0:
+        noon = datetime.datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
+        random_offset = datetime.timedelta(hours=random.randint(-12, 12))
+        dt = noon + random_offset
+
+        city_name, latitude, longitude = return_random_city()
+
+        # Format the datetime
+        formatted_dt = dt.strftime('%Y-%m-%d %H:%M:%S %Z%z')
         
-        # Generate random longitude (-180 to 180 degrees)
-        longitude = random.uniform(-180, 180)
-        
-
-
-        obs = ephem.Observer()
-        obs.lat = latitude
-        obs.lon = longitude
-
-        # Assuming local_noon is already calculated
-        obs.date = datetime.now()
-        local_noon = obs.next_transit(ephem.Sun()).datetime()
-
-        # Formatting the datetime object
-        local_noon = pd.Timestamp(local_noon.strftime("%Y-%m-%d %H:%M:%S"))
-
-        timezone_offset = (longitude + 7.5) // 15
-        print(timezone_offset)
-
-        azimuth, elevation = calculate_solar_position(local_noon, latitude, longitude)
+        azimuth, elevation = calculate_solar_position(pd.Timestamp(formatted_dt), latitude, longitude)
     
+        if elevation >= 20:
+            tests.append((pd.Timestamp(formatted_dt), azimuth, elevation, [latitude, longitude], f"Random city {city_name} at {formatted_dt}"))
+            print((pd.Timestamp(formatted_dt), azimuth, elevation, [latitude, longitude], f"Random city {city_name} at {formatted_dt}"))
+            print()
+            total -= 1
+            count += 1
 
-        tests.append((pd.Timestamp(local_noon), azimuth, elevation, [latitude, longitude], "Random Location"))
-
+    print('Targets generated\n')
     return tests
 
-tests = random_locations()
-for test in tests:
-    print(test)
-    print()
+if __name__ == "__main__":
+    random_locations(5)

@@ -1,0 +1,129 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Divnogorsk at 2024-05-16 01:00:00 ;
+Coords: [55.96, 92.38];
+az/el: [93.88798860784198, 26.078375226890437]
+
+Test started at 2024-05-16:09:13:44.652644
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:23.777
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 141.790827609535
+Median: 110.24646447585258
+Minimum: 1.0073695573069267e-12
+Maximum: 648.9215365616627
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Irbit at 2024-05-16 03:00:00 ;
+Coords: [57.67, 63.07];
+az/el: [95.31913217113592, 26.317617741593516]
+
+Test started at 2024-05-16:09:14:09.910953
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:22.925
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 139.37484450361413
+Median: 101.50120629029506
+Minimum: 9.401924525367738e-13
+Maximum: 631.9663310673048
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Miass at 2024-05-16 05:00:00 ;
+Coords: [55.05, 60.1];
+az/el: [119.29442221786063, 41.28489037956986]
+
+Test started at 2024-05-16:09:14:34.287459
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:24.302
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 66.55893823333705
+Median: 48.52566926886561
+Minimum: 1.8287389205277817e-12
+Maximum: 249.7526508089343
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Gukovo at 2024-05-16 12:00:00 ;
+Coords: [48.0447, 39.9482];
+az/el: [-116.64902189706129, 46.27676665176804]
+
+Test started at 2024-05-16:09:15:00.172195
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:23.921
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 62.048858198431795
+Median: 47.15806120934694
+Minimum: 7.338435044447815e-13
+Maximum: 240.70245456907858
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Kharabali at 2024-05-16 06:00:00 ;
+Coords: [47.4, 48.9];
+az/el: [116.79060541411485, 46.992457167914274]
+
+Test started at 2024-05-16:09:15:25.683377
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:23.464
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 60.350781734359785
+Median: 44.20924525001058
+Minimum: 1.855997654495112e-12
+Maximum: 237.11842180484697
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Mean mean value: 94.02485005585555
+Median mean value:66.55893823333705
+Minimum mean value:60.350781734359785
+Maximum mean value:141.790827609535
+
+Mean median value:70.32812929887416
+Median median value:48.52566926886561
+Minimum median value:44.20924525001058
+Maximum median value:110.24646447585258
+
+Mean minimum value: 1.2732284178622752e-12
+Median minimum value:1.0073695573069267e-12
+Minimum minimum value:7.338435044447815e-13
+Maximum minimum value:1.855997654495112e-12
+
+Mean maximum value: 401.6922789623655
+Median maximum value:249.7526508089343
+Minimum maximum value:237.11842180484697
+Maximum maximum value:648.9215365616627
+
+Total runtime: 0:02:05.961987
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

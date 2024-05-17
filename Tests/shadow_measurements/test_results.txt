@@ -1,0 +1,297 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_1;
+Coords: [47.9253, -97.0329];
+az/el: [-176.0, 61.13284053048538]
+
+Test started at 2024-05-17:09:31:47.489233
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.229
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 30.293380856590765
+Median: 30.293380856590765
+Minimum: 30.246468276815893
+Maximum: 30.340293436365638
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_2;
+Coords: [47.9253, -97.0329];
+az/el: [-178.0, 61.92751306414704]
+
+Test started at 2024-05-17:09:31:49.425224
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.267
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 118.88599892015357
+Median: 118.88599892015357
+Minimum: 118.83644390054371
+Maximum: 118.93555393976342
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_3;
+Coords: [47.9253, -97.0329];
+az/el: [-178.0, 60.38402848718964]
+
+Test started at 2024-05-17:09:31:51.562765
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.238
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 177.84289832374031
+Median: 177.84289832374031
+Minimum: 177.78024123489018
+Maximum: 177.90555541259047
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_4;
+Coords: [47.9253, -97.0329];
+az/el: [-179.0, 62.73767152985498]
+
+Test started at 2024-05-17:09:31:53.560098
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.247
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 260.43817073724836
+Median: 260.43817073724836
+Minimum: 260.367247515865
+Maximum: 260.50909395863175
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_5;
+Coords: [47.9253, -97.0329];
+az/el: [-133.0, 54.33076890750368]
+
+Test started at 2024-05-17:09:31:55.328010
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.233
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 56.865450688643996
+Median: 56.865450688643996
+Minimum: 56.80059544988063
+Maximum: 56.93030592740736
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_6;
+Coords: [47.9253, -97.0329];
+az/el: [-132.0, 51.8326531655379]
+
+Test started at 2024-05-17:09:31:56.981427
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.255
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 118.37990926058853
+Median: 118.37990926058853
+Minimum: 118.17370702925562
+Maximum: 118.58611149192143
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_7;
+Coords: [47.9253, -97.0329];
+az/el: [-130.0, 51.006073276967165]
+
+Test started at 2024-05-17:09:31:58.730505
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.240
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 125.65800330956716
+Median: 125.65800330956716
+Minimum: 125.40585175023728
+Maximum: 125.91015486889707
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_8;
+Coords: [47.9253, -97.0329];
+az/el: [-133.0, 48.93478205636944]
+
+Test started at 2024-05-17:09:32:00.689633
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.240
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 348.121305067093
+Median: 348.121305067093
+Minimum: 347.87572495549205
+Maximum: 348.36688517869396
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_9;
+Coords: [47.9253, -97.0329];
+az/el: [-133.0, 54.31392282839001]
+
+Test started at 2024-05-17:09:32:02.392582
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.243
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 76.72998140433715
+Median: 76.72998140433715
+Minimum: 76.5880236277221
+Maximum: 76.87193918095221
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_10;
+Coords: [47.9253, -97.0329];
+az/el: [-130.0, 51.483073692897236]
+
+Test started at 2024-05-17:09:32:04.093223
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.239
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 86.31954628070383
+Median: 86.31954628070383
+Minimum: 86.21600868657006
+Maximum: 86.42308387483759
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_11;
+Coords: [47.9253, -97.0329];
+az/el: [-131.0, 50.79785438515965]
+
+Test started at 2024-05-17:09:32:05.762733
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.225
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 172.8906743070592
+Median: 172.8906743070592
+Minimum: 172.68953211372536
+Maximum: 173.091816500393
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_12;
+Coords: [47.9253, -97.0329];
+az/el: [-130.0, 46.63657704161672]
+
+Test started at 2024-05-17:09:32:07.452487
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.250
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 430.48914694238454
+Median: 430.48914694238454
+Minimum: 430.2237398625515
+Maximum: 430.75455402221763
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: grand_forks_shadow_13;
+Coords: [47.9253, -97.0329];
+az/el: [-124.0, 46.46880071438582]
+
+Test started at 2024-05-17:09:32:09.138693
+Completed 2 runs with with error from
+-0.01 degrees error
+to
+0.01 degrees error
+Took 0:0:0.219
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 261.6957549145078
+Median: 261.6957549145078
+Minimum: 261.6641545822613
+Maximum: 261.72735524675437
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+Mean Means value: 174.20078623173987
+Median Means value: 125.65800330956716
+Minimum Means value: 30.293380856590765
+Maximum Means value: 430.48914694238454
+
+Mean Medians value: 174.20078623173987
+Median Medians value: 125.65800330956716
+Minimum Medians value: 30.293380856590765
+Maximum Medians value: 430.48914694238454
+
+Mean Minimums value: 174.06674915275468
+Median Minimums value: 125.40585175023728
+Minimum Minimums value: 30.246468276815893
+Maximum Minimums value: 430.2237398625515
+
+Mean Maximum value: 174.33482331072506
+Median Maximum value: 125.91015486889707
+Minimum Maximum value: 30.340293436365638
+Maximum Maximum value: 430.75455402221763
+
+Total runtime: 0:00:23.441032
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -8,6 +8,7 @@ import webbrowser
 from scipy.spatial import ConvexHull
 from datetime import date
 from haversine import haversine, Unit
+import sys
 
 class functions:
     def __init__(self):
@@ -202,7 +203,6 @@ class functions:
                         closest_azimuths = closest_azimuths[:max_locations]
                         closest_altitudes = closest_altitudes[:max_locations]
                         closest_weighted_differences = closest_weighted_differences[:max_locations]
-                        break
 
         # Print the closest locations and their corresponding azimuth and altitude
         # print(step_size)
@@ -217,51 +217,84 @@ if __name__ == "__main__":
     # Create an instance of the functions class
     calculator = functions()
 
-    # Example usage:
-    height_of_object = 1  # Height of the object in meters
-    length_of_shadow = 0.71  # Length of the shadow in meters
+    filename = None
+    datetime_value = None
+    height_of_object = None
+    length_of_shadow = None
+    solar_azimuth = None
+    solar_elevation = None
+    intended_latitude = None
+    intended_longitude = None
 
-    # filename = "raleigh.html"
-    # solar_azimuth = 134.84 #Raleigh, NC
-    # solar_elevation = 65.76 #Raleigh, NC
+    mode = None
 
-    # filename = "bismark.html"
-    # datetime_value = pd.Timestamp('2024-05-08 17:00:00')  # Example datetime
-    # solar_azimuth = 136.75 # Bismark, ND
-    # solar_elevation = 54.11 # Bismark, ND
+    for i in sys.argv:
+        print(i)
 
-    filename = "grand_forksish.html"
-    datetime_value = pd.Timestamp('2024-05-15 15:15:00')  # Example datetime
-    solar_azimuth = 110
-    solar_elevation = 42
-    intended_lat_lon = [47.919, -97.060]
+    
+    i = 1
+    while i < len(sys.argv):
+        if(sys.argv[i] == "-name" and i < len(sys.argv) - 1):
+            i += 1
+            filename = str(sys.argv[i])
+        elif(sys.argv[i] == "-time" and i < len(sys.argv) - 1):
+            i += 1
+            datetime_value = str(sys.argv[i]) + " "
+            i += 1
+            datetime_value += str(sys.argv[i])
+        elif(sys.argv[i] == "-height" and i < len(sys.argv) - 1):
+            i += 1
+            height_of_object = float(sys.argv[i])
+        elif(sys.argv[i] == "-shadow" and i < len(sys.argv) - 1):
+            i += 1
+            length_of_shadow = float(sys.argv[i])
+        elif(sys.argv[i] == "-az" and i < len(sys.argv) - 1):
+            i += 1
+            solar_azimuth = float(sys.argv[i])
+        elif(sys.argv[i] == "-el" and i < len(sys.argv) - 1):
+            i += 1
+            solar_elevation = float(sys.argv[i])
+        elif(sys.argv[i] == "-lat" and i < len(sys.argv) - 1):
+            i += 1
+            intended_latitude = float(sys.argv[i])
+        elif(sys.argv[i] == "-lon" and i < len(sys.argv) - 1):
+            i += 1
+            intended_longitude = float(sys.argv[i])
+        else:
+            print("ERROR: Invalid usage")
+            sys.exit(1)
+        i += 1
 
-    # filename = "minneapolis.html"
-    # solar_azimuth = 146.64 # Minneapolis, MN
-    # solar_elevation = 58.8 # Minneapolis, MN
+    print(filename,
+            datetime_value,
+            height_of_object,
+            length_of_shadow,
+            solar_azimuth,
+            solar_elevation,
+            intended_latitude,
+            intended_longitude)    
 
-    # filename = "san_francisco.html"
-    # solar_azimuth = 140.05 # San Francisco, CA
-    # solar_elevation = 64.98 # San Francisco, CA
+    datetime_value = pd.Timestamp(datetime_value)
+    intended_lat_lon = [intended_latitude, intended_longitude]    
 
-    # filename = "honolulu.html"
-    # datetime_value = pd.Timestamp('2024-05-08 22:00:00')  # Example datetime
-    # solar_azimuth = 119.42 # Honolulu, HI
-    # solar_elevation = 82.37 # Honolulu, HI
+    if filename is not None and datetime_value is not None and solar_azimuth is not None and solar_elevation is not None:
+        mode = "gimble"
+    elif filename is not None and datetime_value is not None and height_of_object is not None and length_of_shadow is not None and solar_azimuth is not None:
+        mode = "shadow"
+    else:
+        print("ERROR: Invalid usage (2)")
+        sys.exit(1)
 
-    # filename = "miami.html"
-    # datetime_value = pd.Timestamp('2024-05-08 16:00:00')  # Example datetime
-    # solar_azimuth = 111.33 # San Francisco, CA
-    # solar_elevation = 70.21 # San Francisco, CA
+    if intended_lat_lon[0] is not None:
+        mode += ":distance"
+    else:
+        mode += ":radius"
 
-
-    # target_elevation = calculator.calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow)
-    # target_elevation = round(target_elevation, 2)  # Round target_elevation to two decimal places
-    # print("Estimated solar elevation angle:", target_elevation, "degrees")
-    # print(f"Estimated asimuth angle: {solar_azimuth} degrees")
-    # solar_elevation = target_elevation  # Example solar elevation angle in degrees
-
-
+    if mode.split(":")[0] == "shadow":
+        target_elevation = calculator.calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow)
+        # target_elevation = round(target_elevation, n)  # Round target_elevation to n decimal places
+        print("Estimated solar elevation angle:", target_elevation, "degrees")
+        solar_elevation = target_elevation  
     
     closest_location = calculator.find_location(datetime_value, solar_azimuth, solar_elevation, lat_min = -90,
                                                                                                 lat_max = 90, 
@@ -281,69 +314,47 @@ if __name__ == "__main__":
 
     print("Closest location:", closest_location)
 
-    # # Separate X and Y coordinates
-    # x_coordinates = [coord[0] for coord in closest_location]
-    # y_coordinates = [coord[1] for coord in closest_location]
-
-    # # Calculate mean, median, and mode of X and Y coordinates
-    # mean_x = mean(x_coordinates)
-    # median_x = median(x_coordinates)
-    # mode_x = Counter(x_coordinates).most_common(1)[0][0]
-
-    # mean_y = mean(y_coordinates)
-    # median_y = median(y_coordinates)
-    # mode_y = Counter(y_coordinates).most_common(1)[0][0]
-
-    # print("Mean X Coordinate:", mean_x)
-    # print("Median X Coordinate:", median_x)
-    # print("Mode X Coordinate:", mode_x)
-
-    # print("Mean Y Coordinate:", mean_y)
-    # print("Median Y Coordinate:", median_y)
-    # print("Mode Y Coordinate:", mode_y)
-
     closest = closest_location
     map_center = closest
     mymap = folium.Map(location=map_center, zoom_start=5)
 
-
-    # # Add markers for each point with tooltips showing their coordinates
-    # for i, coord in enumerate(closest_location):
-    #     folium.Marker(coord, tooltip=f"Coordinates: {coord}").add_to(mymap)
-
     # Add a marker for the centroid with a label
     folium.Marker(closest, tooltip=f"Coordinates: {closest}", icon=folium.Icon(color='red', icon='camera'), popup="Centroid").add_to(mymap)
 
-    # Define radius in miles
-    radius_miles = 10
+    if mode.split(":")[1] == "radius":
 
-    # Convert miles to degrees (approximate conversion)
-    radius_degrees = radius_miles / 69.0
+        # Define radius in miles
+        radius_miles = 100
 
-    # Calculate the Haversine distance between the two points
-    distance = haversine(intended_lat_lon, closest, unit=Unit.MILES)
+        # Convert miles to degrees (approximate conversion)
+        radius_degrees = radius_miles / 69.0
 
-    # Add markers for the intended location and the closest point
-    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(mymap)
+        # Add circle with radius centered around the centroid
+        folium.Circle(
+            location=closest,
+            radius=radius_degrees * 111000,  # Convert degrees to meters (approximate conversion)
+            color='red',
+            fill=True,
+            fill_color='red',
+            fill_opacity=0.2,
+        ).add_to(mymap)
 
-    # Add a line between the intended location and the closest point with a popup label for the distance
-    line = folium.PolyLine(locations=[intended_lat_lon, closest], color='blue',
-                        tooltip=f'{distance:.2f} miles').add_to(mymap)
 
+    if mode.split(":")[1] == "distance":
+        # Calculate the Haversine distance between the two points
+        distance = haversine(intended_lat_lon, closest, unit=Unit.MILES)
 
-    # # Add circle with 100-mile radius centered around the centroid
-    # folium.Circle(
-    #     location=closest,
-    #     radius=radius_degrees * 111000,  # Convert degrees to meters (approximate conversion)
-    #     color='red',
-    #     fill=True,
-    #     fill_color='red',
-    #     fill_opacity=0.2,
-    # ).add_to(mymap)
+        # Add markers for the intended location and the closest point
+        folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup="Centroid").add_to(mymap)
+
+        # Add a line between the intended location and the closest point with a popup label for the distance
+        line = folium.PolyLine(locations=[intended_lat_lon, closest], color='blue',
+                            tooltip=f'{distance:.2f} miles').add_to(mymap)
+
 
     # Save the map to an HTML file
     #filename = 'map_with_shape_and_points_and_centroid_and_circle.html'
-    mymap.save(filename)
+    mymap.save("Single_run_results/" + filename)
 
     # Open the saved HTML file in the default web browser
-    #webbrowser.open(filename)
+    webbrowser.open("Single_run_results/" + filename)
