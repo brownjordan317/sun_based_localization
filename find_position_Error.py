@@ -10,9 +10,9 @@ import folium
 from folium.plugins import HeatMap
 from folium.plugins import MousePosition
 from folium.plugins import HeatMap, MousePosition, MeasureControl, MarkerCluster
-from scipy.spatial import ConvexHull
 import os
-import webbrowser
+import numpy as np
+
 
 def add_percent_error(number, percent_error):
     random_number = random.uniform(-percent_error, percent_error)
@@ -64,14 +64,6 @@ def process_iteration(iteration, error_on_run, change):
 
  # Create an instance of the functions class
 calculator = sun.functions()
-
-# # Example usage:
-# datetime_value = pd.Timestamp('2024-05-13 17:00:00')  # Example datetime
-
-# solar_azimuth= 135.69 # Bismark, ND 05/12/2024 17:00:00 utc
-# solar_elevation= 55.22 # Bismark, ND 05/12/2024 17:00:00 utc
-# intended_lat_lon = [46.817, -100.783]
-# max_runs = 1000
 
 if len(sys.argv) != 10:
     print("Usage: python find_position_Error.py <datetime_value> <solar_azimuth> <solar_elevation> <latitude longitude> <max_runs>")
@@ -137,23 +129,6 @@ minutes = (runtime.seconds % 3600) // 60
 seconds = runtime.seconds % 60
 milliseconds = runtime.microseconds // 1000
 
-# i = 1
-# with open("test_results.txt", "a") as f:
-#     for key, value in error_on_run.items():
-#         f.write(f"Run {i: >2} using \n" + 
-#                 f"{(value[1] * 10000): >20}% azimuth error\n" + 
-#                 f"{(value[2] * 10000): >20}% elevation error\nReturns:\n" + 
-#                 f"( {key[0]}, {key[1]} )\nwhich is {value[0]} miles away\n\n")
-#         i += 1
-
-# i = 1
-# for key, value in error_on_run.items():
-#     print(f"Run {i: >2} using \n" + 
-#           f"{(value[1] * 10000): >20}% azimuth error\n" + 
-#           f"{(value[2] * 10000): >20}% elevation error\nReturns:\n" + 
-#           f"( {key[0]}, {key[1]} )\nwhich is {value[0]} miles away\n\n")
-#     i += 1
-
 directory = f"{filename}/{city_name}"
 # Create the directory if it doesn't exist
 os.makedirs(directory, exist_ok=True)
@@ -206,7 +181,6 @@ for change_type in ["both", "azimuth", "elevation"]:
     plt.close()
 
 
-
 points = error_on_run_master.keys()
 
 try:
@@ -226,7 +200,10 @@ try:
     MousePosition().add_to(m)
     m.add_child(MeasureControl())
     
-    folium.Marker(intended_lat_lon, tooltip=f"Intended: {intended_lat_lon}", icon=folium.Icon(color='blue', icon='home'), popup=f"Intended: {intended_lat_lon}").add_to(m)
+    folium.Marker(intended_lat_lon, 
+                  tooltip=f"Intended: {intended_lat_lon} \n@ {datetime_value_str}", 
+                  icon=folium.Icon(color='blue', icon='home'), 
+                  popup=f"Intended: {intended_lat_lon} \n@ {datetime_value_str}").add_to(m)
 
     # Add heatmap layer to the map
     heat_layer.add_to(m)
@@ -259,7 +236,24 @@ with open(filename + "/test_results.txt", "a") as f:
     f.write("!" * 100)
     f.write("\n\n\n")
 
-# print("Mean:", mean_value)
-# print("Median:", median_value)
-# print("Minimum:", min_value)
-# print("Maximum:", max_value)
+values = [haversine(point, intended_lat_lon, unit=Unit.MILES) for point in points]
+
+if values:
+    max_value = max(values)
+    bins = np.arange(0, max_value + 50, 50)
+    
+    plt.figure(figsize=(15, 9))
+    counts, _, patches = plt.hist(values, bins=bins, edgecolor='black')
+    plt.title(f'Histogram of Distances with 50-Step Bins')
+    plt.xlabel('Distance from intended target in miles')
+    plt.ylabel('Frequency')
+    plt.xticks(bins, rotation=90, fontsize=6)
+    plt.grid(True)
+    # Add count labels to each bar
+    for count, patch in zip(counts, patches):
+        plt.text(patch.get_x() + patch.get_width() / 2, count, int(count), 
+                    ha='center', va='bottom', fontsize=8)
+    plt.savefig(directory + "/" + city_name + "distro_map" + '.png')
+    # plt.show()
+else:
+    print(f"No distance values found in the file.")

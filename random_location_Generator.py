@@ -104,9 +104,22 @@ def random_locations(runs):
     total = runs
     count = 1
     while total > 0:
-        noon = datetime.datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
-        random_offset = datetime.timedelta(hours=random.randint(-12, 12))
-        dt = noon + random_offset
+        # noon = datetime.datetime.now().replace(hour=12, minute=0, second=0, microsecond=0)
+        # random_offset = datetime.timedelta(hours=random.randint(-12, 12))
+        # dt = noon + random_offset
+
+        # Set the range for the year
+        year = random.randint(datetime.datetime.now().year - 10, datetime.datetime.now().year)
+        
+        # Set the month, day, hour, minute, and second randomly
+        month = random.randint(1, 12)
+        day = random.randint(1, 28)  # Assume February has maximum of 28 days for simplicity
+        hour = random.randint(0, 23)
+        minute = random.randint(0, 59)
+        second = random.randint(0, 59)
+    
+        # Create and return the datetime object
+        dt = datetime.datetime(year, month, day, hour, minute, second)
 
         city_name, latitude, longitude = return_random_city()
 

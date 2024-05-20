@@ -1,6 +1,7 @@
 import statistics
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 def write_stats(timestamp, runtime="unavailable"):
     def extract_values(filename):
@@ -61,6 +62,7 @@ def write_stats(timestamp, runtime="unavailable"):
     filename = f"Tests/{timestamp}"
     mean_values, median_values, minimum_values, maximum_values = extract_values(filename + "/test_results.txt")
 
+
     with open(filename + "/test_results.txt", "a") as f:
         items = {"Means" : mean_values, 
                  "Medians" : median_values, 
@@ -75,4 +77,4 @@ def write_stats(timestamp, runtime="unavailable"):
 
 
 if __name__ == "__main__":
-    write_stats(timestamp = "2024_05_15__16_54_22")
+    write_stats(timestamp = "Mega_test")

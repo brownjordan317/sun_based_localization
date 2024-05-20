@@ -5,7 +5,6 @@ import datetime
 import time
 import os
 from random_location_Generator import random_locations
-import statistics
 from write_stats import write_stats
 import math
 
