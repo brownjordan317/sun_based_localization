@@ -1,0 +1,66 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city New York at 2014-09-01 16:41:35 ;
+Coords: [40.7128, -74.006];
+az/el: [173.32081361487727, 57.32886507757472]
+
+Test started at 2024-05-21:14:03:37.896987
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:25.56
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 54.114591854641105
+Median: 40.11823503010243
+Minimum: 1.4031858647803825e-12
+Maximum: 206.37063480182604
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Random city Khenifra at 2017-03-27 08:04:28 ;
+Coords: [32.9304, -5.67];
+az/el: [101.07164164166052, 21.42587819391334]
+
+Test started at 2024-05-21:14:04:05.219311
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:25.168
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 70.26987538927933
+Median: 56.62795490898595
+Minimum: 3.0889908438108697e-12
+Maximum: 288.4860415339231
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+Mean Means value: 62.19223362196022
+Median Means value: 62.19223362196022
+Minimum Means value: 54.114591854641105
+Maximum Means value: 70.26987538927933
+
+Mean Medians value: 48.37309496954419
+Median Medians value: 48.37309496954419
+Minimum Medians value: 40.11823503010243
+Maximum Medians value: 56.62795490898595
+
+Mean Minimums value: 2.246088354295626e-12
+Median Minimums value: 2.246088354295626e-12
+Minimum Minimums value: 1.4031858647803825e-12
+Maximum Minimums value: 3.0889908438108697e-12
+
+Mean Maximum value: 247.42833816787459
+Median Maximum value: 247.42833816787459
+Minimum Maximum value: 206.37063480182604
+Maximum Maximum value: 288.4860415339231
+
+Total runtime: 0:00:55.745781
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

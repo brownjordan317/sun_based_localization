@@ -43,6 +43,16 @@ def calculate_solar_elevation_from_shadow(height_of_object, length_of_shadow):
 
 
 def read_test_txt(testing_filename):
+    """
+    Read the data from a testing text file and return it in a structured format.
+
+    Args:
+        testing_filename (str): The name of the file containing the testing data.
+
+    Returns:
+        tuple: A tuple containing the structured data and the range of elevations.
+    """
+
     tests = []
     times = []
     azimiuths = []
@@ -95,13 +105,20 @@ def read_test_txt(testing_filename):
         print("Txt file gives invalid values")
         sys.exit(1)
 
-    return tests, elevations_range.ceil()
-                
-
-
-
+    return tests, elevations_range
 
 def run_test(datetime_value, solar_azimuth, solar_elevation, intended_lat_lon, city_name, elevations_range = None):
+    """
+    Run a test for the given target and coordinates.
+
+    Args:
+        datetime_value (pd.Timestamp): The datetime value of the target.
+        solar_azimuth (float): The solar azimuth of the target.
+        solar_elevation (float): The solar elevation of the target.
+        intended_lat_lon (list): A list containing the latitude and longitude of the target.
+        city_name (str): The name of the city of the target.
+        elevations_range (float, optional): The range of elevations for the target. Defaults to None.
+    """
     i = 1
     while i < len(sys.argv):
         if(sys.argv[i] == "-fileName" and i < len(sys.argv) - 1):
@@ -132,6 +149,7 @@ def run_test(datetime_value, solar_azimuth, solar_elevation, intended_lat_lon, c
     ]
     
     try:
+        # Run the test and capture the output
         subprocess.run(args, check=True)
     except subprocess.CalledProcessError as e:
         print("Error:", e)
@@ -139,6 +157,9 @@ def run_test(datetime_value, solar_azimuth, solar_elevation, intended_lat_lon, c
 
 
 def main():
+    """
+    The main function of the script.
+    """
     runs = None
     testing_filename = None
 
@@ -156,28 +177,31 @@ def main():
         i += 1
 
     if runs is not None and testing_filename is None:
+        # If the -locations flag is provided, generate random locations
         tests = random_locations(runs)
     elif runs is None and testing_filename is not None:
+        # If the -fileName flag is provided, read the tests from the file
         tests, elevations_range = read_test_txt(testing_filename)
     else:
         print("ERROR: Invalid usage")
         sys.exit(1)
 
 
-    # tests = [
-    #     (pd.Timestamp('2024-05-13 17:00:00'), 135.69, 55.22, [46.817, -100.783], "Bismark, ND"),  # Bismark, ND
-    #     (pd.Timestamp('2024-05-13 22:00:00'), 110.7, 82.97, [21.3, -157.85], "Honolulu, HI"),     # Honolulu, HW
-    #     (pd.Timestamp('2024-05-13 16:00:00'), 107.97, 70.81, [25.77, -80.18], "Miami, FL"),   # Miami, Fl
-    #     (pd.Timestamp('2024-05-13 19:00:00'), 149.57, 58.11, [47.6, -122.32], "Seattle, WA"),    # Seattle, WA
-    #     (pd.Timestamp('2024-05-13 17:00:00'), 2.1, 59.31, [-12.05, -77.04], "Lima, Peru"),    # Lima, Peru
-    #     (pd.Timestamp('2024-05-13 11:00:00'), 155.93, 55.22, [51.50, -0.12], "London, England"),    # London, England
-    #     (pd.Timestamp('2024-05-13 10:00:00'), 1.43, 45.24, [-26.21, 28.03], "Johannesberg, South Africa")    # Johannesberg, South Africa
-    # ]
+    # # tests = [
+    # #     (pd.Timestamp('2024-05-13 17:00:00'), 135.69, 55.22, [46.817, -100.783], "Bismark, ND"),  # Bismark, ND
+    # #     (pd.Timestamp('2024-05-13 22:00:00'), 110.7, 82.97, [21.3, -157.85], "Honolulu, HI"),     # Honolulu, HW
+    # #     (pd.Timestamp('2024-05-13 16:00:00'), 107.97, 70.81, [25.77, -80.18], "Miami, FL"),   # Miami, Fl
+    # #     (pd.Timestamp('2024-05-13 19:00:00'), 149.57, 58.11, [47.6, -122.32], "Seattle, WA"),    # Seattle, WA
+    # #     (pd.Timestamp('2024-05-13 17:00:00'), 2.1, 59.31, [-12.05, -77.04], "Lima, Peru"),    # Lima, Peru
+    # #     (pd.Timestamp('2024-05-13 11:00:00'), 155.93, 55.22, [51.50, -0.12], "London, England"),    # London, England
+    # #     (pd.Timestamp('2024-05-13 10:00:00'), 1.43, 45.24, [-26.21, 28.03], "Johannesburg, South Africa")    # Johannesburg, South Africa
+    # # ]
 
     # Record the start time
     start_time = datetime.datetime.now()
     for test in tests:
-        run_test(*test, elevations_range = None)
+        # Run the test and capture the output
+        run_test(*test, elevations_range=elevations_range)
 
     # Record the end time
     end_time = datetime.datetime.now()
@@ -185,6 +209,7 @@ def main():
     # Calculate the runtime
     runtime = end_time - start_time
 
+    # Write the stats to a file
     write_stats(timestamp, str(runtime))
         
 
