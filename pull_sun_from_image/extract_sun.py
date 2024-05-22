@@ -1,6 +1,7 @@
 import sys
 from PIL import Image, ImageDraw
 import math 
+import os
 
 def extract_white_and_darker_pixels(input_image, output_image):
     with Image.open(input_image) as im:
@@ -70,6 +71,22 @@ def extract_white_and_darker_pixels(input_image, output_image):
             del draw
             red_point_image.save(output_image)
             print(f"Red point added at the center of densest area of white points.")
+
+            background = Image.open(input_image).convert("RGBA")
+            overlay = Image.open(output_image).convert("RGBA")
+
+            new_img = Image.blend(background, overlay, 0.5)
+            file_name = os.path.basename(input_image)
+            base_name = os.path.splitext(file_name)[0]
+            # Create the directory if it doesn't exist
+            directory = "overlayed_images"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+
+            # Save the image to the directory
+            print(f"{directory}/{base_name}.png")
+            new_img.save(f"{directory}/{base_name}_overlay.png", "PNG")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
