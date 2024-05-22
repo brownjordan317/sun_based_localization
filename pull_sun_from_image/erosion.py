@@ -5,7 +5,17 @@ import os
 import cv2
 import numpy as np
 
+
 def extract_white_and_darker_pixels(input_image):
+    """
+    Extract white and darker pixels from the input image.
+
+    Args:
+        input_image (str): The path to the input image.
+
+    Returns:
+        tuple: A tuple containing the new image with only white and darker pixels, and the path to the saved image.
+    """
     with Image.open(input_image) as im:
         # Ensure input image is RGB
         if im.mode != "RGB":
@@ -17,17 +27,36 @@ def extract_white_and_darker_pixels(input_image):
 
         white_points = []  # List to store coordinates of white pixels
 
-        # Loop through each pixel
+        brightest_pixel = None
+        brightest_intensity = 0
+
+        brightest_pixel = None
+        brightest_intensity = 0
+
+        # Find the brightest pixel in the input image
+        for x in range(im.width):
+            for y in range(im.height):
+                # Get pixel color
+                pixel = im.getpixel((x, y))
+                # Calculate intensity as the sum of RGB values
+                intensity = sum(pixel)
+                # Check if current pixel is brighter than the brightest one found so far
+                if intensity > brightest_intensity:
+                    brightest_pixel = pixel
+                    brightest_intensity = intensity
+
+        # Loop through each pixel again to find white or slightly darker pixels
         for x in range(im.width):
             for y in range(im.height):
                 # Get pixel color
                 pixel = im.getpixel((x, y))
                 # Check if pixel is white or the next three darker shades
-                if all(channel >= 240 for channel in pixel):
+                if all(channel >= brightest_pixel[i] - 10 for i, channel in enumerate(pixel)):
                     # Set pixel to white in output image
                     white_image.putpixel((x, y), pixel)
                     # Store coordinates of white pixel
                     white_points.append((x, y))
+
 
         # Create the directory if it doesn't exist
         directory = "sun_pulled_images"
@@ -41,100 +70,145 @@ def extract_white_and_darker_pixels(input_image):
 
         # Save the output image
         white_image.save(output_image)
-        print(f"White pixels and the next three darker shades extracted and saved to {output_image}")
+        print(f"White pixels and the next darker shades extracted and saved to {output_image}")
 
-        # Find the densest area of white points by segmenting the image
-        if white_points:
-            # Segment the image into smaller segments
-            height = white_image.height
-            width = white_image.width
-            exponent = len(str(max(width, height))) - 2
-            segment_size = math.floor(width / height * math.pow(10, exponent))
-            segments = {}
-            for point in white_points:
-                segment_x = point[0] // segment_size
-                segment_y = point[1] // segment_size
-                segment = (segment_x, segment_y)
-                if segment not in segments:
-                    segments[segment] = 0
-                segments[segment] += 1
+        return white_image, output_image
 
-            # Find the segment with the highest density of white points
-            max_density_segment = max(segments, key=segments.get)
 
-            # Calculate the center of the densest segment
-            center_x = (max_density_segment[0] * segment_size) + (segment_size // 2)
-            center_y = (max_density_segment[1] * segment_size) + (segment_size // 2)
+def apply_erosion(input_image):
+    """
+    Apply erosion to the input image until there is only one contour left.
 
-        white_image_cv2 = cv2.imread(output_image)
-        white_image_gray = cv2.cvtColor(white_image_cv2, cv2.COLOR_RGB2GRAY)
+    Args:
+        input_image (numpy.ndarray): The input image to apply erosion to.
 
-        kernel_size = 1  # Start with the smallest odd kernel size
-        max_iterations = 50  # Maximum number of iterations
-        iterations = 0
-        circle_found = False
+    Returns:
+        numpy.ndarray: The final image after applying erosion.
+    """
+    # Initialize variables
+    iterations = 0
+    taken = None
+    kernel_size = 3
+    history = []
+    num_shapes_list = []
 
-        while iterations < max_iterations:
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
-            opening = cv2.morphologyEx(white_image_gray, cv2.MORPH_OPEN, kernel)
+    while True:
+        # Create a structuring element with the current kernel size
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+        # Apply the morphological opening operation to the image
+        opening = cv2.morphologyEx(input_image, cv2.MORPH_OPEN, kernel)
 
-            # Blur the image to reduce noise
-            gray_blurred = cv2.blur(opening, (3, 3))
-            detected_circles = cv2.HoughCircles(
-                gray_blurred, cv2.HOUGH_GRADIENT, 1.2, 20, param1=50, param2=30, minRadius=1, maxRadius=200
-            )
-            # cv2.imshow('Opening', opening)
-            # cv2.waitKey(0)
+        # Blur the image to reduce noise
+        blur = cv2.GaussianBlur(opening, (11, 11), 0)
+        # Detect edges in the image
+        canny = cv2.Canny(blur, 30, 150, 3)
+        # Dilate the image to make edges thicker
+        dilated = cv2.dilate(canny, (1, 1), iterations=1)
+            
+        # Uncomment to display the image
+        # cv2.imshow("opening", opening)
+        # cv2.waitKey(0)
 
-            if detected_circles is not None:
-                detected_circles = np.uint16(np.around(detected_circles))
-                opening_colored = cv2.cvtColor(opening, cv2.COLOR_GRAY2BGR)
-                for pt in detected_circles[0, :]:
-                    a, b, r = pt[0], pt[1], pt[2]
-                    cv2.circle(opening_colored, (a, b), r, (0, 255, 0), 2)
-                    cv2.circle(opening_colored, (a, b), 1, (0, 0, 255), 3)
+        # Check if the image is completely black
+        if np.sum(dilated) == 0:
+            break
 
-                # Save the opened image with circles to the directory
-                opening_output_path = f"{directory}/{base_name}_opening_with_circle.jpg"
-                cv2.imwrite(opening_output_path, opening_colored)
-                print(f"Opening image with circles saved to {opening_output_path}")
+        # Store the result in history
+        history.append(dilated.copy())
 
-                cv2.imshow("Detected Circle", opening_colored)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+        if taken is None:
+            # Find contours in the image
+            (cnt, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            num_shapes_list.append(len(cnt))
+            # Check if there is only one contour
+            if len(cnt) == 1:
+                taken = iterations 
 
-                circle_found = True
-                break  # Stop after finding the first circle
+        # Increment kernel size by 2 (ensures odd number)
+        kernel_size += 2
+        iterations += 1
 
-            kernel_size += 2  # Increment kernel size by odd numbers
-            iterations += 1
+    # Define how many iterations back you want to go
+    if len(set(num_shapes_list)) == 1:
+        x_iterations_back = iterations + 1
+    else:
+        x_iterations_back = iterations - taken
 
-        if not circle_found:
-            print("No circles detected after maximum iterations.")
+    # Ensure we do not access out of bounds in the history list
+    if x_iterations_back <= iterations:
+        result_image = history[-x_iterations_back]
+    else:
+        # Handle the case where the requested number of iterations back is not available
+        result_image = history[0] if history else np.zeros_like(input_image)
 
-            # Convert the white_image (PIL Image) to a numpy array to draw on it with OpenCV
-            red_point_image_np = np.array(white_image)
-            # Convert back to RGB mode if necessary
-            if red_point_image_np.ndim == 2:
-                red_point_image_np = cv2.cvtColor(red_point_image_np, cv2.COLOR_GRAY2RGB)
+    return result_image
 
-            # Draw the red point on the numpy array
-            radius = segment_size // 7
-            cv2.circle(red_point_image_np, (center_x, center_y), radius, (255, 0, 0), -1)
 
-            # Convert back to PIL Image
-            red_point_image = Image.fromarray(red_point_image_np)
-            red_point_image.save(output_image)
-            print(f"Red point added at the center of densest area of white points.")
+def draw_red_point_at_center_of_densest_area(white_image, output_image):
+    """
+    Draw a red point at the center of the densest area of white pixels in the given image.
 
-            background = Image.open(input_image).convert("RGBA")
-            overlay = Image.open(output_image).convert("RGBA")
-            new_img = Image.blend(background, overlay, 0.5)
+    Args:
+        white_image (numpy.ndarray): The image where the red point will be drawn.
+        output_image (str): The path to where the output image will be saved.
 
-            directory = "overlayed_images"
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            new_img.save(f"{directory}/{base_name}_overlay.png", "PNG")
+    Returns:
+        None
+    """
+    # Find the average x and y coordinates of all white pixels
+    white_pixels = np.column_stack(np.where(white_image > 0))
+
+    if white_pixels.size > 0:
+        # Calculate the average x and y coordinates of all white pixels
+        center_x = int(round(np.mean(white_pixels[:, 1])))
+        center_y = int(round(np.mean(white_pixels[:, 0])))
+        print(f"Average x: {center_x}, Average y: {center_y}")
+    else:
+        print("No white pixels found in the image.")
+
+    # Calculate the size of each segment based on the image size
+    height = white_image.shape[0]
+    width = white_image.shape[1]
+    exponent = len(str(max(width, height))) - 2
+    segment_size = math.floor(width / height * math.pow(10, exponent))
+
+    # Draw the red point on the numpy array
+    radius = segment_size // 10
+    cv2.circle(white_image, (center_x, center_y), radius, (255, 0, 0), -1)
+
+    # Save the output image
+    cv2.imwrite(output_image, white_image)
+    print(f"Red point added at the center of densest area of white points.")
+
+
+def overlay_images(input_image, output_image):
+    """
+    Overlay the two images with 50% transparency and save the result.
+
+    Args:
+        input_image (str): The path to the background image.
+        output_image (str): The path to the foreground image.
+
+    Returns:
+        None
+    """
+    # Open the background image
+    background = Image.open(input_image).convert("RGBA")
+
+    # Open the foreground image
+    overlay = Image.open(output_image).convert("RGBA")
+
+    # Overlay the two images with 50% transparency
+    new_img = Image.blend(background, overlay, 0.5)
+
+    # Create the directory if it doesn't exist
+    directory = "overlayed_images"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Save the overlayed image
+    new_img.save(f"{directory}/{os.path.splitext(os.path.basename(input_image))[0]}_overlay.png", "PNG")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -142,4 +216,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     input_image = sys.argv[1]
-    extract_white_and_darker_pixels(input_image)
+    white_image, output_image = extract_white_and_darker_pixels(input_image)
+    eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
+    draw_red_point_at_center_of_densest_area(eroded_image, output_image)
+    overlay_images(input_image, output_image)
+
