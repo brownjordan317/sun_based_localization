@@ -4,6 +4,7 @@ import math
 import os
 import cv2
 import numpy as np
+from scipy.spatial import distance
 
 
 def extract_white_and_darker_pixels(input_image):
@@ -51,7 +52,7 @@ def extract_white_and_darker_pixels(input_image):
                 # Get pixel color
                 pixel = im.getpixel((x, y))
                 # Check if pixel is white or the next three darker shades
-                if all(channel >= brightest_pixel[i] - 10 for i, channel in enumerate(pixel)):
+                if all(channel >= brightest_pixel[i] - 5 for i, channel in enumerate(pixel)):
                     # Set pixel to white in output image
                     white_image.putpixel((x, y), pixel)
                     # Store coordinates of white pixel
@@ -73,6 +74,7 @@ def extract_white_and_darker_pixels(input_image):
         print(f"White pixels and the next darker shades extracted and saved to {output_image}")
 
         return white_image, output_image
+
 
 
 def apply_erosion(input_image):
@@ -121,7 +123,7 @@ def apply_erosion(input_image):
             (cnt, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
             num_shapes_list.append(len(cnt))
             # Check if there is only one contour
-            if len(cnt) == 1:
+            if len(cnt) <= 1:
                 taken = iterations 
 
         # Increment kernel size by 2 (ensures odd number)
@@ -131,7 +133,7 @@ def apply_erosion(input_image):
     # Define how many iterations back you want to go
     if len(set(num_shapes_list)) == 1:
         x_iterations_back = iterations + 1
-    else:
+    elif iterations:
         x_iterations_back = iterations - taken
 
     # Ensure we do not access out of bounds in the history list
@@ -141,44 +143,117 @@ def apply_erosion(input_image):
         # Handle the case where the requested number of iterations back is not available
         result_image = history[0] if history else np.zeros_like(input_image)
 
+
+
     return result_image
 
+def detect_circles(image):
+    """
+    Detect circles, half-circles, and quarter-circles in the given image using Hough Circle Transform.
 
-def draw_red_point_at_center_of_densest_area(white_image, output_image):
+    Args:
+        image (numpy.ndarray): The input image to detect circles in.
+
+    Returns:
+        numpy.ndarray: The image with detected circles, half-circles, and quarter-circles drawn.
+        tuple: The center point of the largest detected circle (x, y).
+    """
+    # Convert image to grayscale if it's not already
+    if len(image.shape) == 3:
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray_image = image.copy()
+
+
+    # Initialize variables to keep track of the largest circle
+    max_radius = 0
+    max_center = None
+    
+    # Convert grayscale image to color (BGR) image
+    color_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    
+    circles = cv2.HoughCircles(
+                image, cv2.HOUGH_GRADIENT, 1.2, 20, param1=50, param2=30, minRadius=1, maxRadius=1000
+            )
+    if circles is not None:
+        circles = np.uint16(np.around(circles))
+        for circle in circles[0, :]:
+            # Draw the circle
+            cv2.circle(color_image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
+            print("Circle drawn at center:", circle[0], circle[1])
+            
+            # Check if the current circle is the largest
+            if circle[2] > max_radius:
+                max_radius = circle[2]
+                max_center = (circle[0], circle[1])
+    
+    else: 
+        # Threshold the grayscale image to get white or slightly darker pixels
+        _, thresholded_image = cv2.threshold(gray_image, 250, 255, cv2.THRESH_BINARY)
+        
+        # Find contours in the thresholded image
+        contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        # Iterate through contours
+        for contour in contours:
+            # Calculate the radius of the circle using the contour area
+            radius = np.sqrt(cv2.contourArea(contour) / np.pi)
+            # Check if the current circle is the largest
+            if radius > max_radius:
+                max_radius = radius
+                # Get the center of the circle by finding its bounding box
+                x, y, w, h = cv2.boundingRect(contour)
+                max_center = (x + w // 2, y + h // 2)
+        
+        # Draw the largest circle
+        if max_center is not None:
+            cv2.circle(color_image, max_center, int(max_radius), (0, 255, 0), 2)
+            # Draw the center of the circle
+            cv2.circle(color_image, max_center, 2, (0, 255, 0), 3)
+            print("Largest circle drawn at center:", max_center[0], max_center[1])
+    
+    return color_image, max_center, max_radius
+
+
+def draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center,radius):
     """
     Draw a red point at the center of the densest area of white pixels in the given image.
 
     Args:
-        white_image (numpy.ndarray): The image where the red point will be drawn.
+        circle_detected_image (numpy.ndarray): The image where the red point will be drawn.
         output_image (str): The path to where the output image will be saved.
 
     Returns:
         None
     """
-    # Find the average x and y coordinates of all white pixels
-    white_pixels = np.column_stack(np.where(white_image > 0))
 
-    if white_pixels.size > 0:
-        # Calculate the average x and y coordinates of all white pixels
-        center_x = int(round(np.mean(white_pixels[:, 1])))
-        center_y = int(round(np.mean(white_pixels[:, 0])))
-        print(f"Average x: {center_x}, Average y: {center_y}")
+    if center is None:
+        # Find the average x and y coordinates of all white pixels
+        white_pixels = np.column_stack(np.where(circle_detected_image > 0))
+
+        if white_pixels.size > 0:
+            # Calculate the average x and y coordinates of all white pixels
+            center_x = int(round(np.mean(white_pixels[:, 1])))
+            center_y = int(round(np.mean(white_pixels[:, 0])))
+            print(f"Average x: {center_x}, Average y: {center_y}")
+        else:
+            print("No white pixels found in the image.")
+
     else:
-        print("No white pixels found in the image.")
+        center_x = center[0]
+        center_y = center[1]
 
     # Calculate the size of each segment based on the image size
-    height = white_image.shape[0]
-    width = white_image.shape[1]
+    height = circle_detected_image.shape[0]
+    width = circle_detected_image.shape[1]
     exponent = len(str(max(width, height))) - 2
     segment_size = math.floor(width / height * math.pow(10, exponent))
 
-    # Draw the red point on the numpy array
-    radius = segment_size // 10
-    cv2.circle(white_image, (center_x, center_y), radius, (255, 0, 0), -1)
+    cv2.circle(circle_detected_image, (center_x, center_y), (math.ceil(radius * 0.05)), (0, 0, 255), -1)
 
     # Save the output image
-    cv2.imwrite(output_image, white_image)
-    print(f"Red point added at the center of densest area of white points.")
+    cv2.imwrite(output_image, circle_detected_image)
+    print(f"Point added at the center of densest area of white points.")
 
 
 def overlay_images(input_image, output_image):
@@ -218,6 +293,8 @@ if __name__ == "__main__":
     input_image = sys.argv[1]
     white_image, output_image = extract_white_and_darker_pixels(input_image)
     eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
-    draw_red_point_at_center_of_densest_area(eroded_image, output_image)
+    circle_detected_image, center, radius = detect_circles(eroded_image)
+    cv2.imwrite('output_image_with_circles.jpg', circle_detected_image)
+    draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
     overlay_images(input_image, output_image)
 
