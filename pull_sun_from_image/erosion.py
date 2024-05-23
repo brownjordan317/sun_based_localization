@@ -4,7 +4,10 @@ import math
 import os
 import cv2
 import numpy as np
-from scipy.spatial import distance
+
+from PIL import Image
+import numpy as np
+from collections import Counter
 
 
 def extract_white_and_darker_pixels(input_image):
@@ -15,61 +18,66 @@ def extract_white_and_darker_pixels(input_image):
         input_image (str): The path to the input image.
 
     Returns:
-        tuple: A tuple containing the new image with only white and darker pixels, and the path to the saved image.
+        tuple: A tuple containing the new image with only white and darker pixels,
+               the path to the saved image, and a dictionary containing each intensity
+               and its frequency of occurrence.
     """
     with Image.open(input_image) as im:
-        # Ensure input image is RGB
-        if im.mode != "RGB":
-            print("Error: Input image must be RGB.")
-            sys.exit(1)
+        # Convert image to grayscale
+        im = im.convert("L")
+        intensity_values = list(im.getdata())
 
         # Create a new image with the same size and mode as input image
         white_image = Image.new("RGB", im.size)
 
         white_points = []  # List to store coordinates of white pixels
 
-        brightest_pixel = None
-        brightest_intensity = 0
+        brightest_intensity = max(intensity_values)
 
-        brightest_pixel = None
-        brightest_intensity = 0
+        # Calculate ratio compared to total pixels
+        total_pixels = im.width * im.height
 
-        # Find the brightest pixel in the input image
+        # Calculate mean, median, and mode of intensities
+        mean_intensity = np.mean(intensity_values)
+        median_intensity = np.median(intensity_values)
+        intensity_counter = Counter(intensity_values)
+        mode_intensity = intensity_counter.most_common(1)[0][0]  # Get the most common value
+        print(f"Mean intensity: {mean_intensity}")
+        print(f"Median intensity: {median_intensity}")
+        print(f"Mode intensity: {mode_intensity}")
+
+        # Initialize a new list to store intensities with count >= 100
+        high_frequency_intensities = []
+        print(total_pixels)
+
+        #print("Intensity frequencies (sorted by intensity, cutoff after first intensity count under 100):")
+        sorted_intensities = sorted(intensity_counter.items(), key=lambda x: x[0], reverse=True)
+        for intensity, frequency in sorted_intensities:
+            #print(f"Intensity: {intensity}, Frequency: {frequency}")
+            if frequency < total_pixels * 0.000045:
+                break
+            else:
+                high_frequency_intensities.append(intensity)
+
+
+        if len(high_frequency_intensities) > 255 // 2:
+            sub = 3
+        else:
+            sub = len(high_frequency_intensities)
+        # Loop through each pixel again to find white or the next n darker shades
         for x in range(im.width):
             for y in range(im.height):
-                # Get pixel color
-                pixel = im.getpixel((x, y))
-                # Calculate intensity as the sum of RGB values
-                intensity = sum(pixel)
-                # Check if current pixel is brighter than the brightest one found so far
-                if intensity > brightest_intensity:
-                    brightest_pixel = pixel
-                    brightest_intensity = intensity
-
-        # Loop through each pixel again to find white or slightly darker pixels
-        for x in range(im.width):
-            for y in range(im.height):
-                # Get pixel color
-                pixel = im.getpixel((x, y))
+                # Get pixel intensity
+                intensity = im.getpixel((x, y))
                 # Check if pixel is white or the next three darker shades
-                if all(channel >= brightest_pixel[i] - 5 for i, channel in enumerate(pixel)):
+                if intensity >= brightest_intensity - sub:
                     # Set pixel to white in output image
-                    white_image.putpixel((x, y), pixel)
+                    white_image.putpixel((x, y), (255, 255, 255))  # Set to white in RGB mode
                     # Store coordinates of white pixel
                     white_points.append((x, y))
 
-
-        # Create the directory if it doesn't exist
-        directory = "sun_pulled_images"
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
-        file_name = os.path.basename(input_image)
-        base_name = os.path.splitext(file_name)[0]
-        # Save the image to the directory
-        output_image = f"{directory}/{base_name}_extracted.jpg"
-
         # Save the output image
+        output_image = "output_image.jpg"
         white_image.save(output_image)
         print(f"White pixels and the next darker shades extracted and saved to {output_image}")
 
@@ -105,7 +113,7 @@ def apply_erosion(input_image):
         # Detect edges in the image
         canny = cv2.Canny(blur, 30, 150, 3)
         # Dilate the image to make edges thicker
-        dilated = cv2.dilate(canny, (1, 1), iterations=1)
+        dilated = cv2.dilate(canny, (3, 3), iterations=1)
             
         # Uncomment to display the image
         # cv2.imshow("opening", opening)
@@ -120,10 +128,10 @@ def apply_erosion(input_image):
 
         if taken is None:
             # Find contours in the image
-            (cnt, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            (cnt, hierarchy) = cv2.findContours(dilated.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             num_shapes_list.append(len(cnt))
             # Check if there is only one contour
-            if len(cnt) <= 1:
+            if len(cnt) <= 2:
                 taken = iterations 
 
         # Increment kernel size by 2 (ensures odd number)
@@ -147,9 +155,10 @@ def apply_erosion(input_image):
 
     return result_image
 
+
 def detect_circles(image):
     """
-    Detect circles, half-circles, and quarter-circles in the given image using Hough Circle Transform.
+    Detect circles, half-circles, and quarter-circles in the given image using Hough Circle Transform and RANSAC.
 
     Args:
         image (numpy.ndarray): The input image to detect circles in.
@@ -157,65 +166,39 @@ def detect_circles(image):
     Returns:
         numpy.ndarray: The image with detected circles, half-circles, and quarter-circles drawn.
         tuple: The center point of the largest detected circle (x, y).
+        float: The radius of the largest detected circle.
     """
-    # Convert image to grayscale if it's not already
-    if len(image.shape) == 3:
-        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    else:
-        gray_image = image.copy()
-
-
-    # Initialize variables to keep track of the largest circle
-    max_radius = 0
-    max_center = None
+    # Convert to grayscale if needed
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if len(image.shape) == 3 else image.copy()
+    color_image = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
     
-    # Convert grayscale image to color (BGR) image
-    color_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    max_radius, max_center = 0, None
     
-    circles = cv2.HoughCircles(
-                image, cv2.HOUGH_GRADIENT, 1.2, 20, param1=50, param2=30, minRadius=1, maxRadius=1000
-            )
+    # Hough Circle Transform
+    circles = cv2.HoughCircles(gray_image, cv2.HOUGH_GRADIENT, 1.2, 20, param1=50, param2=30, minRadius=1, maxRadius=1000)
     if circles is not None:
-        circles = np.uint16(np.around(circles))
-        for circle in circles[0, :]:
-            # Draw the circle
+        for circle in np.uint16(np.around(circles))[0, :]:
             cv2.circle(color_image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
-            print("Circle drawn at center:", circle[0], circle[1])
-            
-            # Check if the current circle is the largest
             if circle[2] > max_radius:
-                max_radius = circle[2]
-                max_center = (circle[0], circle[1])
+                max_radius, max_center = circle[2], (circle[0], circle[1])
+
+    # Threshold and find contours
+    _, thresholded_image = cv2.threshold(gray_image, 250, 255, cv2.THRESH_BINARY)
+    contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     
-    else: 
-        # Threshold the grayscale image to get white or slightly darker pixels
-        _, thresholded_image = cv2.threshold(gray_image, 250, 255, cv2.THRESH_BINARY)
-        
-        # Find contours in the thresholded image
-        contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        
-        # Iterate through contours
-        for contour in contours:
-            # Calculate the radius of the circle using the contour area
-            radius = np.sqrt(cv2.contourArea(contour) / np.pi)
-            # Check if the current circle is the largest
-            if radius > max_radius:
-                max_radius = radius
-                # Get the center of the circle by finding its bounding box
-                x, y, w, h = cv2.boundingRect(contour)
-                max_center = (x + w // 2, y + h // 2)
-        
-        # Draw the largest circle
-        if max_center is not None:
-            cv2.circle(color_image, max_center, int(max_radius), (0, 255, 0), 2)
-            # Draw the center of the circle
-            cv2.circle(color_image, max_center, 2, (0, 255, 0), 3)
-            print("Largest circle drawn at center:", max_center[0], max_center[1])
+    for contour in contours:
+        radius = np.sqrt(cv2.contourArea(contour) / np.pi)
+        if radius > max_radius:
+            max_radius = radius
+            x, y, w, h = cv2.boundingRect(contour)
+            max_center = (x + w // 2, y + h // 2)
     
+    if max_center:
+        cv2.circle(color_image, max_center, int(max_radius), (255, 255, 0), 2)
+
     return color_image, max_center, max_radius
 
-
-def draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center,radius):
+def draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, radius):
     """
     Draw a red point at the center of the densest area of white pixels in the given image.
 
@@ -227,33 +210,17 @@ def draw_red_point_at_center_of_densest_area(circle_detected_image, output_image
         None
     """
 
-    if center is None:
-        # Find the average x and y coordinates of all white pixels
+    center_x, center_y = center if center else (None, None)
+
+    if center_x is None or center_y is None:
         white_pixels = np.column_stack(np.where(circle_detected_image > 0))
+        center_x, center_y = tuple(map(lambda x: int(round(np.mean(x))), [white_pixels[:, 1], white_pixels[:, 0]])) if white_pixels.size > 0 else (None, None)
 
-        if white_pixels.size > 0:
-            # Calculate the average x and y coordinates of all white pixels
-            center_x = int(round(np.mean(white_pixels[:, 1])))
-            center_y = int(round(np.mean(white_pixels[:, 0])))
-            print(f"Average x: {center_x}, Average y: {center_y}")
-        else:
-            print("No white pixels found in the image.")
+    if center_x is not None and center_y is not None:
+        cv2.circle(circle_detected_image, (center_x, center_y), math.ceil(radius * 0.05), (0, 0, 255), -1)
 
-    else:
-        center_x = center[0]
-        center_y = center[1]
-
-    # Calculate the size of each segment based on the image size
-    height = circle_detected_image.shape[0]
-    width = circle_detected_image.shape[1]
-    exponent = len(str(max(width, height))) - 2
-    segment_size = math.floor(width / height * math.pow(10, exponent))
-
-    cv2.circle(circle_detected_image, (center_x, center_y), (math.ceil(radius * 0.05)), (0, 0, 255), -1)
-
-    # Save the output image
     cv2.imwrite(output_image, circle_detected_image)
-    print(f"Point added at the center of densest area of white points.")
+    print("Point added at the center of densest area of white points.")
 
 
 def overlay_images(input_image, output_image):
