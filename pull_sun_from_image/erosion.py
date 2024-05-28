@@ -42,7 +42,7 @@ def edit_image(image_path):
     # Return the edited image
     return image
 
-def extract_white_and_darker_pixels(input_image):
+def extract_white_and_darker_pixels(input_image, sun_name):
     """
     Extract white and darker pixels from the input image.
 
@@ -71,16 +71,13 @@ def extract_white_and_darker_pixels(input_image):
 
         # Calculate mean, median, and mode of intensities
         mean_intensity = np.mean(intensity_values)
-        median_intensity = np.median(intensity_values)
         intensity_counter = Counter(intensity_values)
-        mode_intensity = intensity_counter.most_common(1)[0][0]  # Get the most common value
-        print(f"Mean intensity: {mean_intensity}")
-        print(f"Median intensity: {median_intensity}")
-        print(f"Mode intensity: {mode_intensity}")
+        # print(f"Mean intensity: {mean_intensity}")
+        # print(f"Median intensity: {median_intensity}")
+        # print(f"Mode intensity: {mode_intensity}")
 
         # Initialize a new list to store intensities with count >= 100
         high_frequency_intensities = []
-        print(total_pixels)
 
         reached = 0
         # print("Intensity frequencies (sorted by intensity, cutoff after first intensity count under a threshold):")
@@ -97,7 +94,7 @@ def extract_white_and_darker_pixels(input_image):
 
 
         if len(high_frequency_intensities) > 255 // 2:
-            sub = 3
+            sub = 5
         else:
             sub = len(high_frequency_intensities)
         # Loop through each pixel again to find white or the next n darker shades
@@ -113,15 +110,15 @@ def extract_white_and_darker_pixels(input_image):
                     white_points.append((x, y))
 
         # Save the output image
-        directory = "sun_pulled_images"
+        directory = f"images/sun_pulled_images/{sun_name}"
         if not os.path.exists(directory):
             os.makedirs(directory)
 
         output_image = f"{directory}/extracted_{os.path.splitext(os.path.basename(input_image))[0]}.jpg"
         white_image.save(output_image)
-        print(f"White pixels and the next darker shades extracted and saved to {output_image}")
+        # print(f"White pixels and the next darker shades extracted and saved to {output_image}")
 
-        return white_image, output_image
+        return white_image, output_image, mean_intensity
 
 
 
@@ -193,8 +190,6 @@ def apply_erosion(input_image):
         # Handle the case where the requested number of iterations back is not available
         result_image = history[0] if history else np.zeros_like(input_image)
 
-
-
     return result_image
 
 
@@ -224,7 +219,7 @@ def detect_circles(image):
         max_distance = 0
         mean_x, mean_y = None, None
 
-    max_radius_allowed = 1.5 * max_distance
+    max_radius_allowed = 5 * max_distance
     max_radius, max_center = 0, None
 
     # Hough Circle Transform
@@ -236,7 +231,19 @@ def detect_circles(image):
                 if circle[2] > max_radius:
                     max_radius, max_center = circle[2], (circle[0], circle[1])
 
+    _, thresholded_image = cv2.threshold(gray_image, 250, 255, cv2.THRESH_BINARY)
+    contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    
+    for contour in contours:
+        radius = np.sqrt(cv2.contourArea(contour) / np.pi)
+        if radius <= max_radius_allowed:
+            if radius > max_radius:
+                max_radius = radius
+                x, y, w, h = cv2.boundingRect(contour)
+                max_center = (x + w // 2, y + h // 2)
+
     if max_radius == 0 and max_distance > 0:  # No circles found, use max distance between white pixels
+        # print("No circles found, using max distance between white pixels")
         max_radius = max_distance / 2
         max_center = (mean_x, mean_y)
 
@@ -267,7 +274,7 @@ def draw_red_point_at_center_of_densest_area(circle_detected_image, output_image
         cv2.circle(circle_detected_image, (center_x, center_y), math.ceil(radius * 0.05), (0, 0, 255), -1)
 
     cv2.imwrite(output_image, circle_detected_image)
-    print("Point added at the center of densest area of white points.")
+    # print("Point added at the center of densest area of white points.")
 
 
 def overlay_images(input_image, output_image):
@@ -291,12 +298,44 @@ def overlay_images(input_image, output_image):
     new_img = Image.blend(background, overlay, 0.5)
 
     # Create the directory if it doesn't exist
-    directory = "overlayed_images"
+    directory = "images/overlayed_images"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
     # Save the overlayed image
     new_img.save(f"{directory}/{os.path.splitext(os.path.basename(input_image))[0]}_overlay.png", "PNG")
+
+def crop_image_around_center(image, center, radius, scale_factor=2):
+    """
+    Crop the image around the specified center with a given radius and a scale factor,
+    replacing pixels outside the cropping boundary with black pixels.
+
+    Args:
+        image (numpy.ndarray): The input image.
+        center (tuple): The center coordinates (x, y) around which to crop.
+        radius (float): The radius of the circle around which to crop.
+        scale_factor (float): The scaling factor for cropping. Default is 2.
+
+    Returns:
+        numpy.ndarray: The cropped image with pixels outside the boundary replaced by black pixels.
+    """
+    x, y = center
+    height, width = image.shape[:2]  # Get the height and width of the input image
+    
+    # Create a black mask with the same size as the input image
+    mask = np.zeros_like(image, dtype=np.uint8)
+    
+    # Calculate cropping coordinates within the bounds of the image
+    y_min = max(0, int(y - scale_factor * radius))
+    y_max = min(height, int(y + scale_factor * radius))
+    x_min = max(0, int(x - scale_factor * radius))
+    x_max = min(width, int(x + scale_factor * radius))
+    
+    # Perform cropping and replace pixels outside the boundary with black pixels in the mask
+    cropped_image = image[y_min:y_max, x_min:x_max]
+    mask[y_min:y_max, x_min:x_max] = cropped_image
+    
+    return mask
 
 
 if __name__ == "__main__":
@@ -304,25 +343,58 @@ if __name__ == "__main__":
         print("Usage: python script.py <input_image>")
         sys.exit(1)
 
-    input_image = sys.argv[1]
+    input_image_path = sys.argv[1]
 
-    edited_image = edit_image(input_image)
-
-    directory = "edited_images"
+    directory = "images/edited_images"
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    edited_image_path = f"{directory}/edited_{os.path.splitext(os.path.basename(input_image))[0]}.jpg"
-    edited_image.save(edited_image_path)
+    sun_name = os.path.splitext(os.path.basename(input_image_path))[0]
 
-    white_image, output_image = extract_white_and_darker_pixels(edited_image_path)
+    edited_image = np.array(edit_image(input_image_path))
+    edited_image_path = f"{directory}/edited_{sun_name}.jpg"
+    cv2.imwrite(edited_image_path, edited_image)
+
+    mean_intensity_values = []  # Store mean intensity values
+    white_image, output_image, mean_intensity = extract_white_and_darker_pixels(edited_image_path, sun_name)
+    mean_intensity_values.append(mean_intensity)
+    
     try:
         eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
         circle_detected_image, center, radius = detect_circles(eroded_image)
-    except:
+    except Exception as e:
+        print(f"Error: {e}")
         circle_detected_image, center, radius = detect_circles(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
-    
-    cv2.imwrite('output_image_with_circles.jpg', circle_detected_image)
-    draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
-    overlay_images(input_image, output_image)
 
+    # cv2.imwrite('output_image_with_circles1.jpg', circle_detected_image)
+
+    count = 1
+    while True:
+        cropped_image = crop_image_around_center(edited_image, center, radius)
+        
+        cropped_directory = f"images/cropped_images/{sun_name}"
+        if not os.path.exists(cropped_directory):
+            os.makedirs(cropped_directory)
+        
+        cropped_image_path = f'{cropped_directory}/cropped_{sun_name}_{count}.jpg'
+        cv2.imwrite(cropped_image_path, cropped_image)
+        
+        white_image, output_image, mean_intensity = extract_white_and_darker_pixels(cropped_image_path, sun_name)
+        mean_intensity_values.append(mean_intensity)
+        
+        if mean_intensity in mean_intensity_values[:-1] or count >= 10:  # Check if mean intensity repeats
+            print(f"Mean intensity repeated after {count} iterations or max reached.")
+            break
+        
+        try:
+            eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
+            circle_detected_image, center, radius = detect_circles(eroded_image)
+        except Exception as e:
+            print(f"Error: {e}")
+            circle_detected_image, center, radius = detect_circles(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
+
+        # cv2.imwrite(f'output_image_with_circles{count}.jpg', circle_detected_image)
+        draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
+        overlay_images(input_image_path, output_image)
+        
+        count += 1

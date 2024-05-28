@@ -3,7 +3,10 @@ import subprocess
 import time
 
 # Directory containing the images
-image_dir = 'initial_images'
+image_dir = 'images/initial_images'
+
+# Initialize error count
+error_files = []
 
 # Iterate over each file in the directory
 for filename in os.listdir(image_dir):
@@ -27,5 +30,14 @@ for filename in os.listdir(image_dir):
     print(f"Output for {filepath}:")
     print(result.stdout)
     if result.stderr:
-        print(f"Error for {filepath}:")
-        print(result.stderr)
+        # Add filename to error_files if there was an error
+        error_files.append(filepath)
+
+# Print the filenames of files that threw errors
+if error_files:
+    print("Files with errors:")
+    for file in error_files:
+        print(file)
+else:
+    print("No errors encountered.")
+
