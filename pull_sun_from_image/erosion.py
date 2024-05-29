@@ -59,8 +59,8 @@ def extract_white_and_darker_pixels(input_image, sun_name):
         im = im.convert("L")
         intensity_values = list(im.getdata())
 
-        # Create a new image with the same size and mode as input image
-        white_image = Image.new("RGB", im.size)
+        # # Create a new image with the same size and mode as input image
+        # white_image = Image.new("RGB", im.size)
 
         white_points = []  # List to store coordinates of white pixels
 
@@ -93,21 +93,27 @@ def extract_white_and_darker_pixels(input_image, sun_name):
                 high_frequency_intensities.append(intensity)
 
 
+        im_array = np.array(im)
+        height, width = im_array.shape
+        
         if len(high_frequency_intensities) > 255 // 2:
             sub = 5
         else:
             sub = len(high_frequency_intensities)
-        # Loop through each pixel again to find white or the next n darker shades
-        for x in range(im.width):
-            for y in range(im.height):
-                # Get pixel intensity
-                intensity = im.getpixel((x, y))
-                # Check if pixel is white or the next three darker shades
-                if intensity >= brightest_intensity - sub:
-                    # Set pixel to white in output image
-                    white_image.putpixel((x, y), (255, 255, 255))  # Set to white in RGB mode
-                    # Store coordinates of white pixel
-                    white_points.append((x, y))
+
+        threshold = brightest_intensity - sub
+
+        # Create a mask for the pixels that should be white
+        mask = im_array >= threshold
+
+        # Create an output image array and set the white pixels
+        white_image_array = np.zeros((height, width, 3), dtype=np.uint8)
+        white_image_array[mask] = [255, 255, 255]
+
+        # # Get the coordinates of white pixels
+        # white_points = np.column_stack(np.where(mask))
+
+        white_image = Image.fromarray(white_image_array, 'RGB')
 
         # Save the output image
         directory = f"images/sun_pulled_images/{sun_name}"
@@ -367,34 +373,37 @@ if __name__ == "__main__":
         circle_detected_image, center, radius = detect_circles(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
 
     # cv2.imwrite('output_image_with_circles1.jpg', circle_detected_image)
+    # Comment out two lines below if cropping
+    draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
+    overlay_images(input_image_path, output_image)
 
-    count = 1
-    while True:
-        cropped_image = crop_image_around_center(edited_image, center, radius)
+    # count = 1
+    # while True:
+    #     cropped_image = crop_image_around_center(edited_image, center, radius)
         
-        cropped_directory = f"images/cropped_images/{sun_name}"
-        if not os.path.exists(cropped_directory):
-            os.makedirs(cropped_directory)
+    #     cropped_directory = f"images/cropped_images/{sun_name}"
+    #     if not os.path.exists(cropped_directory):
+    #         os.makedirs(cropped_directory)
         
-        cropped_image_path = f'{cropped_directory}/cropped_{sun_name}_{count}.jpg'
-        cv2.imwrite(cropped_image_path, cropped_image)
+    #     cropped_image_path = f'{cropped_directory}/cropped_{sun_name}_{count}.jpg'
+    #     cv2.imwrite(cropped_image_path, cropped_image)
         
-        white_image, output_image, mean_intensity = extract_white_and_darker_pixels(cropped_image_path, sun_name)
-        mean_intensity_values.append(mean_intensity)
+    #     white_image, output_image, mean_intensity = extract_white_and_darker_pixels(cropped_image_path, sun_name)
+    #     mean_intensity_values.append(mean_intensity)
         
-        if mean_intensity in mean_intensity_values[:-1] or count >= 10:  # Check if mean intensity repeats
-            print(f"Mean intensity repeated after {count} iterations or max reached.")
-            break
+    #     if mean_intensity in mean_intensity_values[:-1] or count >= 10:  # Check if mean intensity repeats
+    #         print(f"Mean intensity repeated after {count} iterations or max reached.")
+    #         break
         
-        try:
-            eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
-            circle_detected_image, center, radius = detect_circles(eroded_image)
-        except Exception as e:
-            print(f"Error: {e}")
-            circle_detected_image, center, radius = detect_circles(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
+    #     try:
+    #         eroded_image = apply_erosion(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
+    #         circle_detected_image, center, radius = detect_circles(eroded_image)
+    #     except Exception as e:
+    #         print(f"Error: {e}")
+    #         circle_detected_image, center, radius = detect_circles(cv2.imread(output_image, cv2.IMREAD_GRAYSCALE))
 
-        # cv2.imwrite(f'output_image_with_circles{count}.jpg', circle_detected_image)
-        draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
-        overlay_images(input_image_path, output_image)
+    #     # cv2.imwrite(f'output_image_with_circles{count}.jpg', circle_detected_image)
+    #     draw_red_point_at_center_of_densest_area(circle_detected_image, output_image, center, math.ceil(radius))
+    #     overlay_images(input_image_path, output_image)
         
-        count += 1
+    #     count += 1
