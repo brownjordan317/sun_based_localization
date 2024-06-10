@@ -126,8 +126,6 @@ def extract_white_and_darker_pixels(input_image, sun_name):
 
         return white_image, output_image, mean_intensity
 
-
-
 def apply_erosion(input_image):
     """
     Apply erosion to the input image until there is only one contour left.
@@ -238,7 +236,7 @@ def detect_circles(image):
                     max_radius, max_center = circle[2], (circle[0], circle[1])
 
     _, thresholded_image = cv2.threshold(gray_image, 250, 255, cv2.THRESH_BINARY)
-    contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(thresholded_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
     for contour in contours:
         radius = np.sqrt(cv2.contourArea(contour) / np.pi)
@@ -247,6 +245,7 @@ def detect_circles(image):
                 max_radius = radius
                 x, y, w, h = cv2.boundingRect(contour)
                 max_center = (x + w // 2, y + h // 2)
+                cv2.circle(color_image, (x+w//2, y+h//2), int(radius), (255, 0, 0), 2)
 
     if max_radius == 0 and max_distance > 0:  # No circles found, use max distance between white pixels
         # print("No circles found, using max distance between white pixels")
