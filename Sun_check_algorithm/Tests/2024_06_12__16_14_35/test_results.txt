@@ -1,0 +1,171 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Bismark, ND;
+Coords: [46.817, -100.783];
+az/el: [135.69, 55.22]
+
+Test started at 2024-06-12:16:14:37.376316
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:27.203
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 58.12839809983766
+Median: 46.39974641645347
+Minimum: 2.6306648729109745
+Maximum: 211.520168332068
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Honolulu, HI;
+Coords: [21.3, -157.85];
+az/el: [110.7, 82.97]
+
+Test started at 2024-06-12:16:15:07.395480
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:26.584
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 54.13694216122599
+Median: 27.011346543155074
+Minimum: 7.064452484188545
+Maximum: 205.25791590851094
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Miami, FL;
+Coords: [25.77, -80.18];
+az/el: [107.97, 70.81]
+
+Test started at 2024-06-12:16:15:36.799145
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:27.136
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 43.55538770837262
+Median: 33.317422412448146
+Minimum: 3.360694912839933
+Maximum: 202.12709552095825
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Seattle, WA;
+Coords: [47.6, -122.32];
+az/el: [149.57, 58.11]
+
+Test started at 2024-06-12:16:16:07.945393
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:27.248
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 50.13358766998067
+Median: 34.706923552189416
+Minimum: 2.4472031344598215
+Maximum: 199.64618074732687
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Lima, Peru;
+Coords: [-12.05, -77.04];
+az/el: [2.1, 59.31]
+
+Test started at 2024-06-12:16:16:38.430363
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:26.597
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 52.002247284888156
+Median: 39.74750949693331
+Minimum: 1.968465512616656
+Maximum: 189.72579374416773
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: London, England;
+Coords: [51.5, -0.12];
+az/el: [155.93, 55.22]
+
+Test started at 2024-06-12:16:17:08.245949
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:27.509
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 51.20039089998792
+Median: 36.18567577154558
+Minimum: 1.1664214822758507
+Maximum: 201.7167154252481
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Intended Target: Johannesburg, South Africa;
+Coords: [-26.21, 28.03];
+az/el: [1.43, 45.24]
+
+Test started at 2024-06-12:16:17:39.020926
+Completed 600 runs with with error from
+-3.0 degrees error
+to
+3.0 degrees error
+Took 0:0:27.320
+
+Statistics:
+Distances from Intended in Miles:
+Mean: 51.217854541070416
+Median: 38.138249800599404
+Minimum: 2.0411895442213153
+Maximum: 192.3129431355701
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
+Mean Means value: 51.482115480766204
+Median Means value: 51.217854541070416
+Minimum Means value: 43.55538770837262
+Maximum Means value: 58.12839809983766
+
+Mean Medians value: 36.500981999046346
+Median Medians value: 36.18567577154558
+Minimum Medians value: 27.011346543155074
+Maximum Medians value: 46.39974641645347
+
+Mean Minimums value: 2.9541559919304423
+Median Minimums value: 2.4472031344598215
+Minimum Minimums value: 1.1664214822758507
+Maximum Minimums value: 7.064452484188545
+
+Mean Maximum value: 200.32954468769285
+Median Maximum value: 201.7167154252481
+Minimum Maximum value: 189.72579374416773
+Maximum Maximum value: 211.520168332068
+
+Total runtime: 0:03:32.614044
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
