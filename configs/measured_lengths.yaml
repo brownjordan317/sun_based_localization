@@ -1,0 +1,8 @@
+mode: shadow
+filename: "shadow_map.html"
+datetime: "2025-08-17 12:34:00"
+height_of_object: 10.5
+length_of_shadow: 15.2
+solar_azimuth: 123.4
+intended_latitude: 47.6062
+intended_longitude: -122.3321
