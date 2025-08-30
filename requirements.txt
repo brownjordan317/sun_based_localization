@@ -1,0 +1,10 @@
+folium==0.20.0
+geonamescache==2.0.0
+geopy==2.4.1
+haversine==2.9.0
+numpy==2.3.2
+ollama==0.5.3
+pandas==2.3.2
+plotly==6.3.0
+pyyaml==3.4.5
+tqdm==4.67.1

@@ -1,1 +1,4 @@
 results/
+random_location_csvs/
+configs/
+*.pyc
