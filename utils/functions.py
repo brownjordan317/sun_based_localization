@@ -147,6 +147,8 @@ class Functions:
         latitudes = np.arange(lat_min, lat_max + step_size, step_size)
         longitudes = np.arange(lon_min, lon_max + step_size, step_size)
         LAT, LON = np.meshgrid(latitudes, longitudes, indexing="ij")
+        LAT = np.clip(LAT, -90, 90)
+        LON = np.clip(LON, -180, 180)
 
         # Vectorized solar position
         azimuths, elevations = self.calculate_solar_position(utc_datetime, LAT, LON)

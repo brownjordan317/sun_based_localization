@@ -37,8 +37,9 @@ class SolarResultsAnalyzer:
                 "location": self.results_df.loc[distances.idxmax()]["location"]
             },
             "percentiles": distances.quantile([0.1, 0.25, 0.5, 0.75, 0.9, 0.95]).to_dict(),
-            "percent_below_thresholds": {t: float((distances < t).mean() * 100) 
-                                         for t in [1, 3, 5, 10, 25]}
+            "percent_below_thresholds (meters)": {t: float((distances < t).mean() * 100) 
+                                                  for t in [1, 10, 50, 100, 1000, 
+                                                            3000, 5000, 10000, 25000, 50000]},
         }
         return stats
 

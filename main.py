@@ -1,13 +1,15 @@
+from datetime import datetime
+from halo import Halo
 from haversine import haversine, Unit
 from tqdm import tqdm
 import argparse
+import csv
 import folium
 import os
 import pandas as pd
 import webbrowser
 import yaml
-from datetime import datetime
-import csv
+import random
 
 from utils.functions import Functions
 from utils.loc_describer_agent import navigation_agent
@@ -80,7 +82,7 @@ class SunLocalizer():
               f"Solar Elevation: {self.solar_elevation}\n"
               f"Intended Lat, Lon: {self.intended_lat_lon}\n"
               )
-    
+
     def load_config_csv(self, csv_file):
         """
         Load the configuration from a CSV file.
@@ -94,6 +96,33 @@ class SunLocalizer():
             The path to the CSV file containing the configuration.
         """
         self.test_db = pd.read_csv(csv_file)
+
+    def get_random_error_amount(self, original_value, percent_error):
+        return original_value * random.uniform(1 - percent_error, 1 + percent_error)
+
+    def add_error_to_azimuth(self, percent_error=0):
+        """
+        Add a percentage error to the solar azimuth angle.
+
+        Parameters
+        ----------
+        percent_error : float
+            The percentage error to add to the solar azimuth angle.
+        """
+        self.solar_azimuth = self.get_random_error_amount(self.solar_azimuth, 
+                                                          percent_error)
+
+    def add_error_to_elevation(self, percent_error=0):
+        """
+        Add a percentage error to the solar elevation angle.
+
+        Parameters
+        ----------
+        percent_error : float
+            The percentage error to add to the solar elevation angle.
+        """
+        self.solar_elevation = self.get_random_error_amount(self.solar_elevation, 
+                                                            percent_error)
 
     def calc_closest_location(self, initial_step=10.0, refinement_factor=10, min_step=1e-9):
         """
@@ -120,6 +149,8 @@ class SunLocalizer():
         step = initial_step
         while step > min_step:
             lat, lon = self.closest_location
+            lat = min(max(lat, -90.0), 90.0)
+            lon = min(max(lon, -180.0), 180.0)
             self.closest_location = self.calculator.find_location(self.datetime_value,
                                                                 self.solar_azimuth,
                                                                 self.solar_elevation,
@@ -133,7 +164,9 @@ class SunLocalizer():
         if self.intended_lat_lon is not None:
             self.distance = haversine(self.intended_lat_lon, 
                                  self.closest_location, 
-                                 unit=Unit.MILES)
+                                 unit=Unit.METERS)
+            if self.distance < 0:
+                print("WTF")
 
     def plot_location(self):
         """
@@ -261,11 +294,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.random:
+        spinner = Halo(text='Generating random locations', spinner='dots')
+        spinner.start()
         os.makedirs("random_location_csvs", exist_ok=True)
         file_name = f"{datetime_rt}.csv"
         file_name = os.path.join("random_location_csvs", file_name)
         random_locations(args.random, file_name)
         args.config = file_name
+        spinner.stop()
 
     sun_localizer = SunLocalizer(args)
     sun_localizer.find_me()

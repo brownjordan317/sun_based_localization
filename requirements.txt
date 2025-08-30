@@ -8,3 +8,4 @@ pandas==2.3.2
 plotly==6.3.0
 pyyaml==3.4.5
 tqdm==4.67.1
+halo==0.0.31
