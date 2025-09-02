@@ -113,6 +113,7 @@ python3 main.py --random <number of rows to generate>
 ```
 This will automatically generate the csv on runtime and save it named as the time it was generated at
 
+</details>
 
 <details>
 <summary>Additional arguments</summary>
@@ -125,4 +126,4 @@ This will automatically generate the csv on runtime and save it named as the tim
 | --open_map          | flag    | Open the map in a web browser                   |
 | --agent_description | flag    | Print navigation description                     |
 
-<details>
+</details>

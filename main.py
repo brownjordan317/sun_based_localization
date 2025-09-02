@@ -190,7 +190,7 @@ class SunLocalizer():
                           ).add_to(mymap)
             folium.PolyLine([self.intended_lat_lon, self.closest_location], 
                             color='blue',
-                            tooltip=f'{self.distance:.2f} miles'
+                            tooltip=f'{self.distance:.2f} meters'
                             ).add_to(mymap)
 
         output_path = os.path.join("results", 
@@ -210,7 +210,7 @@ class SunLocalizer():
         Parameters:
         agent_description (bool): If True, print out a description of how to navigate to the location.
         """
-        if self.mode == "lengths":
+        if self.mode == "shadow":
             target_elevation = self.calculator.calculate_solar_elevation_from_shadow(self.height_of_object, 
                                                                                      self.length_of_shadow)
             print("Estimated solar elevation angle:", target_elevation, "degrees")
