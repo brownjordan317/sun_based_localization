@@ -110,7 +110,7 @@ def parse_args():
     parser.add_argument("--agent_description", action="store_true", help="Print navigation description")
     parser.add_argument("--doe", type=int, default=0, 
                         help="Degrees of error (doe). Range of degrees to test maximum allowed error")
-    parser.add_argument("--step", type=float, default=0.1, 
+    parser.add_argument("--step", type=float, default=0.25, 
                         help="Step size for degrees of error (doe). Range of degrees to test maximum allowed error")
     return parser.parse_args()
 

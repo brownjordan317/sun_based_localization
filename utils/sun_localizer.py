@@ -179,18 +179,10 @@ class SunLocalizer():
         if self.mode == "shadow":
             target_elevation = self.calculator.calculate_solar_elevation_from_shadow(self.height_of_object, 
                                                                                      self.length_of_shadow)
-            print("Estimated solar elevation angle:", target_elevation, "degrees")
+            # print("Estimated solar elevation angle:", target_elevation, "degrees")
             self.solar_elevation = target_elevation
             
         self.calc_closest_location()
-
-        if self.args.agent_description:
-            description = navigation_agent(self.closest_location[0], 
-                                           self.closest_location[1], 
-                                           self.datetime_value, 
-                                           self.solar_azimuth)
-            print("\nNavigation Description:\n")
-            print(description)
 
     def write_results(self, output_path):
         """
@@ -235,8 +227,9 @@ class SunLocalizer():
         """
         self.csvs_path = os.path.join("results", self.datetime_rt, "csvs")
         os.makedirs(self.csvs_path, exist_ok=True)
-        self.jsons_path = os.path.join("results", self.datetime_rt, "jsons")
-        os.makedirs(self.jsons_path, exist_ok=True)
+        if hasattr(self, "test_db"):
+            self.jsons_path = os.path.join("results", self.datetime_rt, "jsons")
+            os.makedirs(self.jsons_path, exist_ok=True)
 
         if self.azimuth_error > 0 and self.elevation_error > 0:
             file_name = f"results_az_+{self.azimuth_error}_el_+{self.elevation_error}.csv"
@@ -276,22 +269,32 @@ class SunLocalizer():
         self.elevation_error = elevation_error
 
         file_name = self.name_file()
+        csv_path = os.path.join(self.csvs_path, file_name)
 
         if hasattr(self, "config"):
             self.run()
-            self.write_results()
+            if self.args.agent_description:
+                description = navigation_agent(self.closest_location[0], 
+                                            self.closest_location[1], 
+                                            self.datetime_value, 
+                                            self.solar_azimuth)
+                print("\nNavigation Description:\n")
+                print(description)
+            print(f"Estimated location: {self.closest_location}")
+            print(f"Distance from intended location: {self.distance} meters")
+            self.write_results(csv_path)
             if not self.args.skip_map:
                 self.plot_location()
 
         elif hasattr(self, "test_db"):
             self.mode = "angles"
 
-            analyzer = SolarResultsAnalyzer(os.path.join(self.csvs_path, file_name))
+            analyzer = SolarResultsAnalyzer(csv_path)
             for _, row in tqdm(
                 self.test_db.iterrows(),
                 desc="Running tests",
                 total=len(self.test_db),
-                disable=not show_progress  # 👈 toggle here
+                disable=not show_progress  # toggle here
             ):
                 try:
                     self.filename = f"{row['city']}_{row['country']}"
@@ -300,7 +303,7 @@ class SunLocalizer():
                     self.solar_elevation = row["elevation"] + elevation_error
                     self.intended_lat_lon = [row["latitude"], row["longitude"]]
                     self.run()
-                    self.write_results(os.path.join(self.csvs_path, file_name))
+                    self.write_results(csv_path)
                     if not self.args.skip_map:
                         self.plot_location()
                 except Exception as e:
