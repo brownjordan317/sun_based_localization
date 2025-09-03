@@ -92,7 +92,7 @@ class Functions:
 
         # Equation of time
         B = np.radians((360/365) * (day_of_year - 81))
-        EoT = 9.87*np.sin(2*B) - 7.53*np.cos(B) - 1.5*np.sin(B)
+        EoT = 9.87 * np.sin(2 * B) - 7.53 * np.cos(B) - 1.5 * np.sin(B)
 
         # Local Solar Time
         LSTM = 15 * abs(0)   # UTC offset = 0

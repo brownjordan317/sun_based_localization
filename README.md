@@ -125,6 +125,7 @@ This will automatically generate the csv on runtime and save it named as the tim
 | --skip_map          | flag    | Skip map generation                              |
 | --open_map          | flag    | Open the map in a web browser                   |
 | --agent_description | flag    | Print navigation description                     |
-| --doe               | int     | Degrees of Error (DOE) creates a table of added error to check|                    |
+| --doe               | int     | Degrees of Error (DOE) creates a table of added error to check|
+| --step              | float   | Step size for degrees of error (DOE)             |
 
 </details>

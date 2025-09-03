@@ -251,7 +251,7 @@ class SunLocalizer():
 
         return file_name
 
-    def find_me(self, azimuth_error=0, elevation_error=0):    
+    def find_me(self, azimuth_error=0, elevation_error=0, show_progress=True):    
         """
         Run the solar location finder on either a config file or a pandas dataframe.
 
@@ -269,6 +269,8 @@ class SunLocalizer():
             The error offset to add to the solar azimuth angle.
         elevation_error : int
             The error offset to add to the solar elevation angle.
+        show_progress : bool, default=True
+            Whether to display a tqdm progress bar during iteration.
         """
         self.azimuth_error = azimuth_error
         self.elevation_error = elevation_error
@@ -280,12 +282,17 @@ class SunLocalizer():
             self.write_results()
             if not self.args.skip_map:
                 self.plot_location()
+
         elif hasattr(self, "test_db"):
             self.mode = "angles"
-            
-            analyzer = SolarResultsAnalyzer(os.path.join(self.csvs_path,
-                                                         file_name))
-            for _, row in tqdm(self.test_db.iterrows(), desc="Running tests", total=len(self.test_db)):
+
+            analyzer = SolarResultsAnalyzer(os.path.join(self.csvs_path, file_name))
+            for _, row in tqdm(
+                self.test_db.iterrows(),
+                desc="Running tests",
+                total=len(self.test_db),
+                disable=not show_progress  # 👈 toggle here
+            ):
                 try:
                     self.filename = f"{row['city']}_{row['country']}"
                     self.datetime_value = pd.Timestamp(row["timestamp"])
@@ -293,12 +300,14 @@ class SunLocalizer():
                     self.solar_elevation = row["elevation"] + elevation_error
                     self.intended_lat_lon = [row["latitude"], row["longitude"]]
                     self.run()
-                    self.write_results(os.path.join(self.csvs_path,
-                                                    file_name))
+                    self.write_results(os.path.join(self.csvs_path, file_name))
                     if not self.args.skip_map:
                         self.plot_location()
                 except Exception as e:
                     print(f"Error processing row {row['timestamp']}: {e}")
                     continue
-            analyzer.summarize(os.path.join(self.jsons_path,
-                                            f"summary_{file_name.replace('.csv', '.json')}"))
+
+            analyzer.summarize(os.path.join(
+                self.jsons_path,
+                f"summary_{file_name.replace('.csv', '.json')}"
+            ))
